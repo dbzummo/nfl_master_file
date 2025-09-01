@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.env.*
+OddAPI.env
+
+# macOS
+.DS_Store
+
+# Artifacts / outputs
+out/
+out_*.csv
+manifest.json
+cache/
+
+# Backups / patches / zips
+*.bak.*
+patch_*.py
+*.zip
+
+# Notebooks
+.ipynb_checkpoints/

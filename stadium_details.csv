@@ -1,0 +1,33 @@
+team_code,stadium_name,dome_status,turf_type,altitude_ft
+ARI,State Farm Stadium,Retractable,Grass,1150
+ATL,Mercedes-Benz Stadium,Retractable,Turf,1050
+BAL,M&T Bank Stadium,Outdoor,Turf,52
+BUF,Highmark Stadium,Outdoor,Turf,602
+CAR,Bank of America Stadium,Outdoor,Turf,751
+CHI,Soldier Field,Outdoor,Grass,598
+CIN,Paycor Stadium,Outdoor,Turf,495
+CLE,Cleveland Browns Stadium,Outdoor,Grass,584
+DAL,AT&T Stadium,Retractable,Turf,604
+DEN,Empower Field at Mile High,Outdoor,Grass,5280
+DET,Ford Field,Dome,Turf,601
+GB,Lambeau Field,Outdoor,Grass,640
+HOU,NRG Stadium,Retractable,Turf,49
+IND,Lucas Oil Stadium,Retractable,Turf,728
+JAX,EverBank Stadium,Outdoor,Grass,10
+KC,Arrowhead Stadium,Outdoor,Grass,1023
+LV,Allegiant Stadium,Dome,Grass,2021
+LAC,SoFi Stadium,Dome,Turf,98
+LAR,SoFi Stadium,Dome,Turf,98
+MIA,Hard Rock Stadium,Outdoor,Grass,10
+MIN,U.S. Bank Stadium,Dome,Turf,840
+NE,Gillette Stadium,Outdoor,Turf,309
+NO,Caesars Superdome,Dome,Turf,3
+NYG,MetLife Stadium,Outdoor,Turf,7
+NYJ,MetLife Stadium,Outdoor,Turf,7
+PHI,Lincoln Financial Field,Outdoor,Grass,20
+PIT,Acrisure Stadium,Outdoor,Grass,745
+SF,Levi's Stadium,Outdoor,Grass,23
+SEA,Lumen Field,Outdoor,Turf,26
+TB,Raymond James Stadium,Outdoor,Grass,30
+TEN,Nissan Stadium,Outdoor,Grass,433
+WSH,Northwest Stadium,Outdoor,Grass,98

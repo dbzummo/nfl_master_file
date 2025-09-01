@@ -1,0 +1,38 @@
+{
+  "created_utc": "2025-09-01T18:47:21Z",
+  "host": "Mac",
+  "python": "3.9.6",
+  "platform": "macOS-15.6.1-arm64-arm-64bit",
+  "config_snapshot": {
+    "kind": "smoke",
+    "timestamp_utc": "2025-09-01T18:47:21.100105+00:00",
+    "python": "n/a",
+    "host": "local",
+    "config_used": "synthetic"
+  },
+  "api_meta": {
+    "predictions_csv": "out_smoke_predictions.csv",
+    "gamecards_csv": "out_smoke_gamecards.csv"
+  },
+  "files": {
+    "ratings_source": {
+      "path": "embedded synthetic DataFrame",
+      "exists": false
+    },
+    "depth_charts_source": {
+      "path": "embedded synthetic DataFrame",
+      "exists": false
+    },
+    "odds_source": {
+      "path": "embedded synthetic DataFrame",
+      "exists": false
+    },
+    "injury_source": {
+      "path": "embedded synthetic list",
+      "exists": false
+    }
+  },
+  "extra_meta": {
+    "note": "Offline smoke test; no roster audit performed."
+  }
+}

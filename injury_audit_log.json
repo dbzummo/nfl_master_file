@@ -1,0 +1,7 @@
+{
+  "as_of_utc": "2025-09-01T17:02:51.204344Z",
+  "source": "SportsDataIO",
+  "season": "2025REG",
+  "error": "RuntimeError: SDIO HTTP 404: { \"statusCode\": 404, \"message\": \"Resource not found\" }",
+  "count": 0
+}

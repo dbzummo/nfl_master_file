@@ -1,0 +1,124 @@
+{
+  "model_name": "NFL Model v5.0 (Strict)",
+  "description": "Fail-fast, source-verified weekly prediction pipeline. No fallbacks, no assumptions.",
+
+  "strict_mode": true,
+  "min_roster_sources": 2,
+  "block_on_missing_injuries": true,
+  "block_on_missing_hfa": true,
+  "block_on_empty_odds": true,
+  "allow_scraper_fallbacks": false,
+
+  "run_defaults": {
+    "week_window_utc": {
+      "start_offset_days": -1,
+      "end_offset_days": 6
+    },
+    "neutral_site_handling": "respect_flag", 
+    "top_plays_count": 5,
+    "save_artifacts": true
+  },
+
+  "io": {
+    "team_ratings_csv": "kalman_state_preseason.csv",
+    "depth_charts_csv": "team_depth_charts_with_values.csv",
+    "priors_csv": "player_priors_2025.csv",
+    "player_team_map_csv": "player_team_map.csv",
+    "hfa_csv": "stadium_hfa_advanced.csv",
+    "variance_model_path": "variance_model.joblib",
+    "output_dir": ".",
+    "provenance_json": "out_provenance.json",
+    "predictions_csv": "out_week1_predictions.csv",
+    "gamecards_csv": "out_week1_gamecards.csv",
+    "audit_log_json": "roster_audit_log.json"
+  },
+
+  "schema_requirements": {
+    "team_ratings_csv": {
+      "index": "team_code",
+      "columns_required": ["rating", "hfa"]
+    },
+    "depth_charts_csv": {
+      "columns_required": [
+        "team","position","player","tier","value","starter_rank"
+      ]
+    },
+    "priors_csv": {
+      "columns_required": ["player","pos","team","epa_per_play_prior","snap_share_prior"]
+    },
+    "player_team_map_csv": {
+      "columns_required": ["player","team"]
+    },
+    "hfa_csv": {
+      "columns_required": ["team_code","hfa"]
+    }
+  },
+
+  "odds": {
+    "provider": "theoddsapi",
+    "markets": ["spreads", "totals"],
+    "book_priority": ["bwin", "pinnacle", "betmgm", "fanduel", "draftkings"],
+    "consensus_method": "median_across_books",
+    "reject_if_no_games": true
+  },
+
+  "rosters": {
+    "primary_provider": "sportsdataio",
+    "secondary_provider": "nflverse",
+    "require_exact_team_match": true,
+    "require_depth_order": false,
+    "hard_block_on_conflict": true,
+    "record_sources_in_audit": true
+  },
+
+  "injuries": {
+    "provider": "espn",
+    "block_if_zero_players": true,
+    "positions_considered": ["QB","LT","WR1","CB1","EDGE1","RB1","S1","LB1"],
+    "severity_weights": {
+      "Out": 1.0,
+      "Doubtful": 0.7,
+      "Questionable": 0.35
+    },
+    "position_weights": {
+      "QB": 2.0,
+      "LT": 1.25,
+      "WR1": 1.0,
+      "RB1": 0.6,
+      "EDGE1": 1.1,
+      "CB1": 1.1,
+      "S1": 0.6,
+      "LB1": 0.6
+    },
+    "max_team_adjustment_epa": 3.5
+  },
+
+  "variance": {
+    "expected_features": ["vegas_total"],
+    "cap_sigma_min": 7.0,
+    "cap_sigma_max": 14.0,
+    "block_on_feature_mismatch": true
+  },
+
+  "calibration": {
+    "enabled": false,
+    "notes": "Calibration curves can be enabled later once the historical CSVs are wired in under strict provenance."
+  },
+
+  "monte_carlo": {
+    "sims": 50000,
+    "seed": 1337,
+    "use_empirical_sigma": true
+  },
+
+  "explanations": {
+    "include_driver_notes": true,
+    "max_driver_items": 6
+  },
+
+  "logging": {
+    "level": "INFO",
+    "echo_key_env": ["THE_ODDS_API_KEY", "SPORTSDATAIO_API_KEY"],
+    "include_ssl_version": true
+  }
+}
