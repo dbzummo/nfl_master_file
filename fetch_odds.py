@@ -1,280 +1,186 @@
-# fetch_odds.py
-import os
-import sys
-import json
-import time
-import math
-import datetime as dt
-from typing import List, Dict, Any, Optional, Tuple
 
-import requests
+from __future__ import annotations
+import os, json, time
+from typing import Any, Dict, List, Optional
 import pandas as pd
+import requests
 
-THE_ODDS_BASE = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds"
+_COLS = ["home_team","away_team","vegas_line","vegas_total","kickoff_utc","neutral_site"]
 
-# -------------------------------------------------------------------
-# ENV / KEY HANDLING
-# -------------------------------------------------------------------
-def _get_odds_key() -> Optional[str]:
+def _as_df(obj: Optional[Any]) -> pd.DataFrame:
     """
-    Accept either THE_ODDS_API_KEY or ODDS_API_KEY to avoid env mismatches.
+    Normalize any provider result to our standard DataFrame, never None.
+    Expected keys if obj is iterable of dicts:
+      home_team, away_team, vegas_line, vegas_total, kickoff_utc, neutral_site
     """
-    return (os.getenv("THE_ODDS_API_KEY") or os.getenv("ODDS_API_KEY") or "").strip() or None
+    try:
+        df = pd.DataFrame(list(obj) if obj is not None else [])
+    except Exception:
+        df = pd.DataFrame([])
+    # ensure columns
+    for c in _COLS:
+        if c not in df.columns:
+            df[c] = None
+    # order and copy
+    return df[_COLS].copy()
 
-# -------------------------------------------------------------------
-# DATES
-# -------------------------------------------------------------------
-def _to_utc_window(week_start_utc: str, week_end_utc: str) -> Tuple[dt.datetime, dt.datetime]:
-    def _parse(s: str) -> dt.datetime:
-        return dt.datetime.fromisoformat(s.replace("Z", "+00:00")).astimezone(dt.timezone.utc)
-    return _parse(week_start_utc), _parse(week_end_utc)
+# ------------------------ OddsAPI (primary) ------------------------
 
-def _default_week_window_now() -> Tuple[str, str]:
+def _oddsapi_fetch() -> pd.DataFrame:
     """
-    If no window provided, return a conservative default:
-    from 2025-09-04T00:00:00Z to 2025-09-09T12:00:00Z (Week 1).
-    Adjust later weeks in your controller if needed.
+    Direct call to The Odds API v4.
+    Env keys tried: ODDS_API_KEY, THEODDS_API_KEY
+    Regions/markets kept minimal for performance.
     """
-    start = dt.datetime(2025, 9, 4, 0, 0, 0, tzinfo=dt.timezone.utc)
-    end   = dt.datetime(2025, 9, 9, 12, 0, 0, tzinfo=dt.timezone.utc)
-    return start.isoformat().replace("+00:00","Z"), end.isoformat().replace("+00:00","Z")
+    api_key = os.getenv("ODDS_API_KEY") or os.getenv("THEODDS_API_KEY")
+    if not api_key:
+        return _as_df(None)
 
-# -------------------------------------------------------------------
-# TEAM NORMALIZATION
-# -------------------------------------------------------------------
-_FALLBACK_TEAM_MAP = {
-    # Common book/team name variants → short codes used by your project
-    "Philadelphia Eagles": "PHI", "Eagles": "PHI", "Phi Eagles": "PHI",
-    "Dallas Cowboys": "DAL", "Cowboys": "DAL",
-    "Washington Commanders": "WSH", "Commanders": "WSH", "Washington": "WSH",
-    "New York Giants": "NYG", "Giants": "NYG",
-    "Kansas City Chiefs": "KC", "Chiefs": "KC",
-    "Los Angeles Chargers": "LAC", "LA Chargers": "LAC", "Chargers": "LAC",
-    "Tampa Bay Buccaneers": "TB", "Buccaneers": "TB", "Bucs": "TB",
-    "Atlanta Falcons": "ATL", "Falcons": "ATL",
-    "Cincinnati Bengals": "CIN", "Bengals": "CIN",
-    "Cleveland Browns": "CLE", "Browns": "CLE",
-    "Miami Dolphins": "MIA", "Dolphins": "MIA",
-    "Indianapolis Colts": "IND", "Colts": "IND",
-    "Carolina Panthers": "CAR", "Panthers": "CAR",
-    "Jacksonville Jaguars": "JAX", "Jaguars": "JAX", "Jags": "JAX",
-    "Arizona Cardinals": "ARI", "Cardinals": "ARI",
-    "New Orleans Saints": "NO", "Saints": "NO", "N.O. Saints": "NO",
-    "Pittsburgh Steelers": "PIT", "Steelers": "PIT",
-    "New York Jets": "NYJ", "Jets": "NYJ",
-    "Tennessee Titans": "TEN", "Titans": "TEN",
-    "Denver Broncos": "DEN", "Broncos": "DEN",
-    "San Francisco 49ers": "SF", "49ers": "SF", "Niners": "SF",
-    "Seattle Seahawks": "SEA", "Seahawks": "SEA",
-    "Detroit Lions": "DET", "Lions": "DET",
-    "Green Bay Packers": "GB", "Packers": "GB",
-    "Houston Texans": "HOU", "Texans": "HOU",
-    "Los Angeles Rams": "LAR", "Rams": "LAR",
-    "Baltimore Ravens": "BAL", "Ravens": "BAL",
-    "Buffalo Bills": "BUF", "Bills": "BUF",
-    "Minnesota Vikings": "MIN", "Vikings": "MIN",
-    "Chicago Bears": "CHI", "Bears": "CHI",
-    "Las Vegas Raiders": "LV", "Raiders": "LV",
-    "New England Patriots": "NE", "Patriots": "NE",
-}
+    url = (
+        "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/"
+        "?regions=us&markets=spreads,totals&oddsFormat=american&dateFormat=iso"
+        f"&apiKey={api_key}"
+    )
 
-def _load_team_map() -> Dict[str,str]:
-    path = "teams_lookup.json"
-    if os.path.exists(path):
+    t0 = time.time()
+    try:
+        r = requests.get(url, timeout=25)
+    except Exception as e:
+        _write_oddsapi_error(f"request exception: {e!r}")
+        return _as_df(None)
+
+    if not r or r.status_code != 200:
+        excerpt = ""
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                custom = json.load(f)
-            # Merge with fallback so custom overrides but we still have broad coverage
-            merged = {**_FALLBACK_TEAM_MAP, **custom}
-            return merged
+            excerpt = r.text if r is not None else ""
         except Exception:
             pass
-    return _FALLBACK_TEAM_MAP
+        _write_oddsapi_error(f"HTTP {getattr(r,'status_code',None)}: {excerpt[:400]}")
+        return _as_df(None)
 
-TEAM_MAP = _load_team_map()
-
-def _to_code(name: str) -> Optional[str]:
-    if not name:
-        return None
-    # exact
-    if name in TEAM_MAP:
-        return TEAM_MAP[name]
-    # try stripped and title-cased variants
-    key = name.strip()
-    return TEAM_MAP.get(key, None)
-
-# -------------------------------------------------------------------
-# API CALL
-# -------------------------------------------------------------------
-def _call_the_odds_api(week_start_utc: str, week_end_utc: str) -> List[Dict[str, Any]]:
-    key = _get_odds_key()
-    if not key:
-        raise RuntimeError("Missing THE_ODDS_API_KEY in .env (or ODDS_API_KEY).")
-
-    params = {
-        "regions": "us,eu",           # cover your Bwin/EU plus US books for consensus
-        "markets": "spreads,totals",
-        "oddsFormat": "american",
-        "dateFormat": "iso",
-        "apiKey": key
-    }
-    # TheOddsAPI returns future events by default; we’ll filter by commence_time window
-    r = requests.get(THE_ODDS_BASE, params=params, timeout=25)
-    if r.status_code != 200:
-        raise RuntimeError(f"TheOddsAPI HTTP {r.status_code}: {r.text[:300]}")
-    data = r.json()
-    # Filter by kickoff window
-    ws, we = _to_utc_window(week_start_utc, week_end_utc)
-    def _in_window(iso: str) -> bool:
-        try:
-            t = dt.datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(dt.timezone.utc)
-            return ws <= t <= we
-        except Exception:
-            return False
-    return [g for g in data if _in_window(g.get("commence_time",""))]
-
-# -------------------------------------------------------------------
-# CONSENSUS BUILDERS
-# -------------------------------------------------------------------
-def _median(vals: List[float]) -> Optional[float]:
-    v = [x for x in vals if x is not None and not math.isnan(x)]
-    if not v:
-        return None
-    return float(pd.Series(v).median())
-
-def _extract_book_lines(book: Dict[str, Any]) -> Tuple[Optional[float], Optional[float], Optional[str]]:
-    """
-    Return (spread_home, total_points, bookmaker_key) for a single bookmaker listing.
-    We’ll interpret spreads market and totals market.
-    """
-    spread_home = None
-    total_points = None
-    bkey = book.get("key")
-    for market in book.get("markets", []):
-        if market.get("key") == "spreads":
-            for outcome in market.get("outcomes", []):
-                # outcomes look like { "name": "Philadelphia Eagles", "price": -110, "point": -7.5 }
-                name = outcome.get("name")
-                point = outcome.get("point")
-                # Home team spread is indicated by matching team name later; we will reconcile by consensus across both outcomes.
-                # Here, just collect both points; the home adjustment is done at game-level.
-                # For consensus, we’ll keep the signed point from the team listed as "home" later.
-                # Return just the numeric; assignment to home happens after team map.
-                # We'll just return point; at game-level, we’ll assign sign for home based on which outcome matches home.
-                # For simplicity, we’ll let game-level code handle spread direction.
-                # Here, we can’t decide home/away yet.
-                pass
-        elif market.get("key") == "totals":
-            # outcomes like { "name": "Over", "point": 47.5 } and "Under"
-            for outcome in market.get("outcomes", []):
-                if outcome.get("name","").lower() == "over":
-                    total_points = outcome.get("point")
-    # We did not extract spread here; game-level will compute medians using per-team outcomes.
-    return (spread_home, total_points, bkey or None)
-
-def _consensus_from_event(event: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """
-    Build a single consensus row for one event.
-    """
-    home_name = event.get("home_team") or ""
-    away_name = event.get("away_team") or ""
-    commence_iso = event.get("commence_time","")
-
-    home = _to_code(home_name)
-    away = _to_code(away_name)
-
-    # If either team didn’t map, drop it (safer than guessing)
-    if not home or not away:
-        return None
-
-    # Collect per-book spreads relative to the listed home/away
-    spread_home_samples = []
-    totals_samples = []
-
-    for book in event.get("bookmakers", []):
-        # Totals
-        for m in book.get("markets", []):
-            if m.get("key") == "totals":
-                over = next((o for o in m.get("outcomes", []) if o.get("name","").lower()=="over"), None)
-                if over and over.get("point") is not None:
-                    totals_samples.append(float(over["point"]))
-            elif m.get("key") == "spreads":
-                # We want the home spread (signed from home team POV)
-                # outcomes: two teams with "point" (e.g., PHI -7.5, DAL +7.5)
-                home_out = next((o for o in m.get("outcomes", []) if _to_code(o.get("name","")) == home), None)
-                if home_out and home_out.get("point") is not None:
-                    spread_home_samples.append(float(home_out["point"]))
-
-    spread_home = _median(spread_home_samples)
-    total_pts   = _median(totals_samples)
-
-    # Neutral-site note: KC vs LAC (São Paulo) — keep KC as designated home from event
-    neutral = False
     try:
-        t = dt.datetime.fromisoformat(commence_iso.replace("Z","+00:00"))
-        if t.year == 2025 and t.month == 9 and t.day == 6 or t.day == 5:
-            # If TheOddsAPI lists it on 5/6 Sep and teams are KC/LAC, tag neutral for downstream use if needed.
-            if set([home, away]) == set(["KC","LAC"]):
-                neutral = True
+        data = r.json()
+    except Exception as e:
+        _write_oddsapi_error(f"json error: {e!r}")
+        return _as_df(None)
+
+    # optional debug dump (helps later diagnostics)
+    try:
+        with open("out_oddsapi_raw.json","w",encoding="utf-8") as f:
+            json.dump({"fetched_at": time.time(), "sample": (data[:3] if isinstance(data, list) else data)}, f, indent=2)
     except Exception:
         pass
 
-    return {
-        "home_team": home,
-        "away_team": away,
-        "spread_home": spread_home,                 # e.g., -7.5 if home is favorite by 7.5
-        "spread_away": -spread_home if spread_home is not None else None,
-        "total": total_pts,
-        "kickoff_utc": commence_iso,
-        "neutral_site": neutral
-    }
+    if not isinstance(data, list) or not data:
+        return _as_df(None)
 
-# -------------------------------------------------------------------
-# PUBLIC API
-# -------------------------------------------------------------------
-def fetch_odds_for_week(week_start_utc: str, week_end_utc: str) -> pd.DataFrame:
-    """
-    Return a DataFrame with columns:
-      home_team, away_team, spread_home, spread_away, total, kickoff_utc, neutral_site
-    """
-    data = _call_the_odds_api(week_start_utc, week_end_utc)
+    def _consensus_spread(markets: List[Dict[str,Any]], home_team: str) -> Optional[float]:
+        # Find "spreads" market across books and median the home spread if present
+        values = []
+        for bk in markets or []:
+            for m in (bk.get("markets") or []):
+                if (m.get("key") or "").lower() != "spreads":
+                    continue
+                for o in (m.get("outcomes") or []):
+                    t = o.get("name")
+                    pt = o.get("point")
+                    if t == home_team and isinstance(pt, (int,float)):
+                        values.append(float(pt))
+        if not values:
+            return None
+        values.sort()
+        mid = len(values)//2
+        return (values[mid] if len(values)%2==1 else (values[mid-1]+values[mid])/2.0)
+
+    def _consensus_total(markets: List[Dict[str,Any]]) -> Optional[float]:
+        # Find "totals" market and median the line (Over/Under usually share same point)
+        values = []
+        for bk in markets or []:
+            for m in (bk.get("markets") or []):
+                if (m.get("key") or "").lower() != "totals":
+                    continue
+                for o in (m.get("outcomes") or []):
+                    pt = o.get("point")
+                    if isinstance(pt, (int,float)):
+                        values.append(float(pt))
+        if not values:
+            return None
+        values.sort()
+        mid = len(values)//2
+        return (values[mid] if len(values)%2==1 else (values[mid-1]+values[mid])/2.0)
+
     rows = []
-    for ev in data:
-        row = _consensus_from_event(ev)
-        if row:
-            rows.append(row)
-    if not rows:
-        return pd.DataFrame(columns=[
-            "home_team","away_team","spread_home","spread_away","total","kickoff_utc","neutral_site"
-        ])
-    df = pd.DataFrame(rows)
-    # Drop exact dupes if any, keep first
-    df = df.drop_duplicates(subset=["home_team","away_team","kickoff_utc"], keep="first")
-    # Sort by kickoff
-    with pd.option_context('mode.use_inf_as_na', True):
-        df["kickoff_utc_parsed"] = pd.to_datetime(df["kickoff_utc"], errors="coerce", utc=True)
-    df = df.sort_values("kickoff_utc_parsed").drop(columns=["kickoff_utc_parsed"])
+    for g in data:
+        home = g.get("home_team")
+        away = g.get("away_team")
+        kickoff = g.get("commence_time")  # ISO string
+        books = g.get("bookmakers") or []
+        sp = _consensus_spread(books, home) if home else None
+        tot = _consensus_total(books)
+
+        # We define vegas_line as spread for home (negative if home is favorite)
+        # The Odds API spreads are usually in home-team terms; our median should reflect that directly.
+        rows.append({
+            "home_team": home,
+            "away_team": away,
+            "vegas_line": sp,
+            "vegas_total": tot,
+            "kickoff_utc": kickoff,
+            "neutral_site": False
+        })
+
+    df = _as_df(rows)
+    # drop rows with no teams
+    df = df.dropna(subset=["home_team","away_team"]).reset_index(drop=True)
     return df
+
+def _write_oddsapi_error(msg: str) -> None:
+    try:
+        with open("out_oddsapi_error.txt","a",encoding="utf-8") as f:
+            f.write(f"[{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}] {msg}\n")
+    except Exception:
+        pass
+
+# ------------------------ SportsDataIO (fallback) ------------------------
+
+def _sio_fetch() -> pd.DataFrame:
+    """
+    Uses an external helper module if available: sportsdataio_provider.fetch_game_odds_by_week(api_key, season, week)
+    Env:
+      SPORTSDATAIO_API_KEY, SIO_SEASON, SIO_WEEK
+    Returns empty if missing or quota/plan blocks.
+    """
+    api_key = os.getenv("SPORTSDATAIO_API_KEY")
+    season  = os.getenv("SIO_SEASON")
+    week    = os.getenv("SIO_WEEK")
+    if not (api_key and season and week):
+        return _as_df(None)
+    try:
+        from sportsdataio_provider import fetch_game_odds_by_week
+    except Exception:
+        return _as_df(None)
+
+    try:
+        rows: List[Dict[str,Any]] = fetch_game_odds_by_week(api_key, season, week)
+        return _as_df(rows)
+    except Exception:
+        return _as_df(None)
+
+# ------------------------ public entry ------------------------
 
 def get_consensus_nfl_odds() -> pd.DataFrame:
     """
-    Convenience wrapper for Week 1 default window.
-    Your run controller can replace this window per week.
+    Deterministic router:
+      1) Try OddsAPI (primary).
+      2) If empty, try SIO (only if env provided).
+      3) Always return a DataFrame with _COLS (possibly empty).
     """
-    ws, we = _default_week_window_now()
-    return fetch_odds_for_week(ws, we)
+    df = _oddsapi_fetch()
+    if isinstance(df, pd.DataFrame) and len(df) > 0:
+        return df
 
-# -------------------------------------------------------------------
-# CLI SMOKE TEST
-# -------------------------------------------------------------------
-if __name__ == "__main__":
-    try:
-        ws, we = _default_week_window_now()
-        print(f"Fetching odds window: {ws} → {we}")
-        df = fetch_odds_for_week(ws, we)
-        print(df.to_string(index=False))
-        if df.empty:
-            print("\n⚠️  No odds found in window. Check API key/plan or adjust the window.")
-    except Exception as e:
-        print(f"❌ fetch_odds failed: {type(e).__name__}: {e}")
-        sys.exit(1)
+    df2 = _sio_fetch()
+    if isinstance(df2, pd.DataFrame) and len(df2) > 0:
+        return df2
+
+    return _as_df(None)
