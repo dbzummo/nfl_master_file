@@ -25,3 +25,7 @@ patch_*.py
 
 # Notebooks
 .ipynb_checkpoints/
+
+# allow these outputs
+!out/msf_details/msf_week.csv
+!out/scheme_features_week.csv
