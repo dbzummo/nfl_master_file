@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>NFL Weekly Report</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #6b7280;
+  --ok: #e7f8ee;
+  --chip: #f1f5f9;
+  --chip-fg: #111;
+  --pill-bg: #eef2ff;
+  --pill-fg: #3730a3;
+  --row-done: #ecfdf5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 24px; background: var(--bg); color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+}
+h1 { font-size: 28px; margin: 0 0 8px 0; }
+.meta { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #eee; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; letter-spacing: .04em; }
+tr.done { background: var(--row-done); }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  background: var(--pill-bg); color: var(--pill-fg); font-size: 12px;
+}
+.summary { margin: 20px 0 8px 0; }
+.cards { margin: 10px 0 40px 0; display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 16px; }
+.card {
+  border: 1px solid #eee; border-radius: 12px; padding: 12px 14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.03);
+}
+.card .hdr { display:flex; align-items:center; gap:10px; color: var(--muted); font-size:12px; }
+.card h3 { margin: 6px 0 8px 0; font-size: 18px; }
+.small { color: var(--muted); font-size: 13px; }
+.kv { margin-top: 6px; font-size: 14px; }
+.kv span { display:inline-block; margin-right: 16px; }
+.footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+.edge-pill {
+  display:inline-block; margin-left:8px; padding:2px 6px; border-radius:999px;
+  background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; font-size:12px;
+}
+.inj-badge {
+  display:inline-block; margin-left:8px; padding:2px 6px; border-radius:999px;
+  background:#fee2e2; color:#991b1b; border:1px solid #fecaca; font-size:12px;
+}
+</style>
+</head>
+<body>
+<h1>NFL Weekly Report</h1>
+<div class="meta">source: out/predictions_week_calibrated_blend.csv — games=1 — window 2025-09-04 → 2025-09-04</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>DATE</th><th>AWAY</th><th>HOME</th><th>P(HOME)</th><th>FINAL</th><th>STATUS</th><th>SPREAD</th><th>TOTAL</th><th>BRIER</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr class="">
+<td>2025-09-04</td>
+<td>DAL</td>
+<td>PHI</td>
+<td>55.0%</td>
+<td>—</td>
+<td><span class="badge">—</span></td>
+<td>-3.5</td>
+<td>47.5</td>
+<td>—</td>
+</tr>
+  </tbody>
+</table>
+
+<div class="summary">
+  <h3>Summary</h3>
+  <div>Completed: 0/1 | Avg Brier (done): —</div>
+  <div>Model edges vs market (moneyline style): -13.4 pp (avg, where available)</div>
+</div>
+
+<h3>Game Cards</h3>
+<div class="cards">
+
+<div class="card">
+  <div class="hdr"><span>2025-09-04</span><span class="edge-pill">edge -13.4 pp</span></div>
+  <h3>DAL @ PHI</h3>
+  <div class="small">P(Home): <b>55.0%</b></div>
+  <div class="small">Final: <b>—</b></div>
+  <div class="kv"><span><b>DAL:</b> </span></div>
+  <div class="kv"><span><b>PHI:</b> </span></div>
+</div>
+
+</div>
+
+<div class="footer">Generated 2025-09-09 17:25:49 • predictions: out/predictions_week_calibrated_blend.csv • msf: out/msf_week.csv • lines: overrides/market_lines.csv</div>
+</body>
+</html>

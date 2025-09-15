@@ -1,0 +1,20 @@
+
+
+<html>
+	<head>
+		<title>Access Restricted</title>
+	</head>
+
+	<body>
+		<h1>Access Restricted</h1>
+
+		<p>Hmm, your authentication is okay.  However, one or more of the following may have happened:</p>
+		<ul>
+		</ul>
+			<li>You forgot to add a relevant subscription to your API Key.  You can easily do so from your account page at <a href="https://www.mysportsfeeds.com">https://www.mysportsfeeds.com</a>.</li>
+			<li>Your API Key supports v1.x requests only.  If that's the case, your API Key may simply be old.  In that case, you'll need to create a new v2.x compatible API Key.
+			<li>You may be requesting a data feed that requires an ADDON.  To see which feeds are included in each ADDON, consult the section titled "What's included in each addon?" on your account page at <a href="https://www.mysportsfeeds.com">https://www.mysportsfeeds.com</a>.</li>
+		</ul>
+	</body>
+</html>
+

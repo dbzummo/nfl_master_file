@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>NFL Weekly Report</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:#111; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align: left; }
+    thead th { font-size: 12px; letter-spacing: .08em; color: #555; text-transform: uppercase; }
+    .chip { display:inline-block; padding: 2px 8px; font-size:12px; border-radius: 999px; background:#eef; color:#334; }
+    .muted { color:#666; font-size:12px; }
+    .card { border:1px solid #eee; border-radius:12px; padding:14px; margin:14px 0; width: 440px; }
+    .row-done { background: #f3fff3; }
+  </style>
+</head>
+<body>
+  <h1>NFL Weekly Report</h1>
+  <div class="muted">source: out/predictions_week_calibrated_blend.csv — games=1 — window 2025-09-04 → 2025-09-04</div>
+
+  <table style="margin-top:14px;">
+    <thead>
+      <tr>
+        <th>Date</th><th>Away</th><th>Home</th>
+        <th>P(Home)</th><th>Final</th><th>Status</th>
+        <th>Spread</th><th>Total</th><th>Brier</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2025-09-04</td><td>DAL</td><td>PHI</td><td>55.0%</td><td>—</td><td><span class="chip">—</span></td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-top:22px;">Summary</h2>
+  <div>Completed: 0/1 | Avg Brier (done): —</div>
+  <div>Model edges vs market (moneyline style): 5.0 pp (avg, where available)</div>
+
+  <h2 style="margin-top:22px;">Game Cards</h2>
+  <div class="card"><div class="muted">2025-09-04</div><div style="font-size:18px;font-weight:600;">DAL @ PHI</div><div style="margin:8px 0;">P(Home): <b>55.0%</b> <span class="chip">edge 5.0 pp</span></div><div class="muted">Final: —</div><div class="muted">Fav: PHI</div><div class="muted"></div></div>
+
+  <div class="muted" style="margin-top:24px;">
+    Generated 2025-09-09 20:12:17 • predictions: out/predictions_week_calibrated_blend.csv •
+    msf: out/msf_week.csv • odds: out/odds_bwin.csv
+    <br/>
+    MSF lastUpdatedOn: 2025-09-09T14:21:04.282Z | MSF fetched_at: 2025-09-09T18:12:15.993024Z
+    <br/>
+    Bwin fetched_at: 
+  </div>
+</body>
+</html>

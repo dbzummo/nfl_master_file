@@ -1,8 +1,8 @@
 {
   "week": 1,
   "games": 16,
-  "scored_games": 12,
-  "accuracy": 0.583333,
-  "brier": 0.214397,
-  "logloss": 0.616876
+  "scored_games": 16,
+  "accuracy": 0.5625,
+  "brier": 0.209148,
+  "logloss": 0.606043
 }

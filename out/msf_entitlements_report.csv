@@ -1,0 +1,15 @@
+endpoint,version,url,status,reason,notes
+v2.games,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/games.json?date=20250904-20250909,200,OK,lastUpdatedOn=2025-09-09T14:21:04.282Z
+v2.game_boxscore,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/game_boxscore.json?game=148741,404,Feed Not Found (404),
+v2.game_playbyplay,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/game_playbyplay.json?game=148741,404,Feed Not Found (404),
+v2.game_lineups,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/game_lineups.json?game=148741,404,Feed Not Found (404),
+v2.player_injuries,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/player_injuries.json?date=20250904-20250909,404,Feed Not Found (404),
+v2.weekly_team_gamelogs,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/weekly_team_gamelogs.json?date=20250904-20250909,404,Feed Not Found (404),
+v2.weekly_player_gamelogs,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/weekly_player_gamelogs.json?date=20250904-20250909,404,Feed Not Found (404),
+v2.seasonal_team_stats,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/seasonal_team_stats.json,404,Feed Not Found (404),
+v2.seasonal_player_stats,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/seasonal_player_stats.json,404,Feed Not Found (404),
+v2.standings,v2,https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/standings.json,200,OK,lastUpdatedOn=2025-09-09T13:36:54.414Z
+v1.game_boxscore,v1,https://api.mysportsfeeds.com/v1.2/pull/nfl/2025-regular/game_boxscore.json?gameid=148741,401,Authentication Required (401),
+v1.game_playbyplay,v1,https://api.mysportsfeeds.com/v1.2/pull/nfl/2025-regular/game_playbyplay.json?gameid=148741,401,Authentication Required (401),
+v1.game_startinglineup,v1,https://api.mysportsfeeds.com/v1.2/pull/nfl/2025-regular/game_startinglineup.json?gameid=148741,401,Authentication Required (401),
+v1.player_injuries,v1,https://api.mysportsfeeds.com/v1.2/pull/nfl/2025-regular/player_injuries.json?date=20250904-20250909,401,Authentication Required (401),

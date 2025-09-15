@@ -1,0 +1,33 @@
+season_year,team,hc_name,oc_name,dc_name,oc_playcaller,hc_tenure,oc_tenure,dc_tenure,continuity_index
+2025,ARI,Jonathan Gannon,Drew Petzing,Nick Rallis,False,3,3,3,1.0
+2025,ATL,Raheem Morris,Zac Robinson,Jimmy Lake,False,2,2,2,1.0
+2025,BAL,John Harbaugh,Todd Monken,Zach Orr,False,7,3,2,1.0
+2025,BUF,Sean McDermott,Joe Brady,Bobby Babich,False,7,2,2,1.0
+2025,CAR,Dave Canales,Brad Idzik,Ejiro Evero,False,2,2,3,1.0
+2025,CHI,Ben Johnson,Declan Doyle,Dennis Allen,False,1,1,1,0.0
+2025,CIN,Zac Taylor,Dan Pitcher,Lou Anarumo,False,7,2,7,1.0
+2025,CLE,Kevin Stefanski,Tommy Rees,Jim Schwartz,False,6,1,3,0.667
+2025,DAL,Brian Schottenheimer,Klayton Adams,Matt Eberflus,False,1,1,1,0.0
+2025,DEN,Sean Payton,Joe Lombardi,Vance Joseph,False,3,3,3,1.0
+2025,DET,Dan Campbell,John Morton,Aaron Glenn,False,5,1,5,0.667
+2025,GB,Matt LaFleur,Adam Stenavich,Jeff Hafley,False,7,4,2,1.0
+2025,HOU,DeMeco Ryans,Nick Caley,Matt Burke,False,3,1,3,0.667
+2025,IND,Shane Steichen,Jim Bob Cooter,Gus Bradley,False,3,1,4,0.667
+2025,JAX,Liam Coen,Grant Udinski,Anthony Campanile,False,1,1,1,0.0
+2025,KC,Andy Reid,Matt Nagy,Steve Spagnuolo,False,7,3,7,1.0
+2025,LAC,Jim Harbaugh,Greg Roman,Jesse Minter,False,2,2,2,1.0
+2025,LAR,Sean McVay,Mike LaFleur,Chris Shula,False,7,3,2,1.0
+2025,LV,Pete Carroll,Chip Kelly,Patrick Graham,False,1,1,4,0.333
+2025,MIA,Mike McDaniel,Frank Smith,Anthony Weaver,False,4,4,2,1.0
+2025,MIN,Kevin O'Connell,Wes Phillips,Brian Flores,False,4,4,3,1.0
+2025,NE,Mike Vrabel,Josh McDaniels,TBD,False,1,1,1,0.0
+2025,NO,Kellen Moore,Doug Nussmeier,Brandon Staley,False,1,1,1,0.0
+2025,NYG,Brian Daboll,Mike Kafka,Shane Bowen,False,4,4,2,1.0
+2025,NYJ,Aaron Glenn,Tanner Engstrand,Steve Wilks,False,1,1,1,0.0
+2025,PHI,Nick Sirianni,Kevin Patullo,Vic Fangio,False,5,1,2,0.667
+2025,PIT,Mike Tomlin,Arthur Smith,Teryl Austin,False,7,2,4,1.0
+2025,SEA,Mike Macdonald,Klint Kubiak,Aden Durde,False,2,1,2,0.667
+2025,SF,Kyle Shanahan,Klay Kubiak,Robert Saleh,False,7,1,1,0.333
+2025,TB,Todd Bowles,Josh Grizzard,Todd Bowles,False,4,1,1,0.333
+2025,TEN,Brian Callahan,Nick Holz,Dennard Wilson,False,2,2,2,1.0
+2025,WAS,Dan Quinn,Kliff Kingsbury,Joe Whitt Jr.,False,2,2,2,1.0
