@@ -1,116 +1,108 @@
 #!/usr/bin/env python3
-import argparse, csv, json, math, os
+import csv, sys, math
 from pathlib import Path
 
-def sigmoid(x): 
-    return 1.0/(1.0+math.exp(-x))
+BOARD  = Path("out/model_board.csv")
+FINALS = Path("out/results/finals.csv")
+OUT    = Path("reports/eval_ats.html")
 
-def load_csv(path):
+def read_finals(path):
+    rows={}
     with open(path, newline='', encoding='utf-8') as f:
-        return list(csv.DictReader(f))
+        r=csv.DictReader(f)
+        for x in r:
+            gid=(x.get('game_id') or '').strip()
+            try:
+                hs=float(x.get('home_score') or '')
+                as_=float(x.get('away_score') or '')
+            except:
+                continue
+            if gid:
+                rows[gid]=(hs,as_)
+    return rows
+
+def try_float(v):
+    try: return float(v)
+    except: return None
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--board",  default="out/model_board.csv")
-    ap.add_argument("--finals", default="out/results/finals.csv")
-    ap.add_argument("--cal",    default="out/calibration/model_line_calibration.json")
-    ap.add_argument("--out",    default="reports/eval_ats.html")
-    args = ap.parse_args()
+    if not BOARD.exists() or not FINALS.exists():
+        print("[FATAL] Missing board or finals CSV.", file=sys.stderr)
+        sys.exit(1)
 
-    board = load_csv(args.board)
-    finals = {r["game_id"]: (int(r["home_score"]), int(r["away_score"])) 
-              for r in load_csv(args.finals) if r.get("home_score") and r.get("away_score")}
-    if not board or not finals:
-        print("[FATAL] Missing board or finals rows"); raise SystemExit(1)
+    finals = read_finals(FINALS)
 
-    a,b = 0.0,1.0
-    if Path(args.cal).exists():
-        cal = json.load(open(args.cal, encoding="utf-8"))
-        a,b = float(cal["a"]), float(cal["b"])
+    # Collect rows where we have both spread and model_line for finished games
+    rows=[]
+    with open(BOARD, newline='', encoding='utf-8') as f:
+        r=csv.DictReader(f)
+        for x in r:
+            gid=(x.get('game_id') or x.get('msf_game_id') or '').strip()
+            if not gid or gid not in finals:
+                continue
 
-    rows_eval = []
-    y_true, p_pred = [], []
+            spread = try_float(x.get('vegas_line_home'))
+            model  = try_float(x.get('model_line_home') or x.get('model_line_home_from_blend'))
+            if spread is None or model is None:
+                continue
 
-    for r in board:
-        gid = (r.get("msf_game_id") or "").strip()
-        if gid not in finals: 
-            continue
+            hs,as_ = finals[gid]
+            margin = hs - as_  # home - away
+            # Home covers if margin + spread > 0 ; push if exactly 0
+            covered = 1 if (margin + spread) > 0 else (0 if (margin + spread) < 0 else 0.5)
+            pick    = 'HOME' if model > spread else 'AWAY'
+            correct = (pick=='HOME' and covered==1) or (pick=='AWAY' and covered==0)
 
-        try:
-            vegas_line = float(r["vegas_line_home"])
-            model_line = float(r["model_line_home"])
-        except Exception:
-            continue
+            rows.append({
+                'date': x.get('date',''),
+                'away': x.get('away_team',''),
+                'home': x.get('home_team',''),
+                'spread_home': spread,
+                'model_home': model,
+                'final_margin': margin,
+                'pick': pick,
+                'covered': covered,
+                'correct': correct
+            })
 
-        hs, as_ = finals[gid]
-        margin = hs - as_
+    rows.sort(key=lambda r:(r['date'], r['home'], r['away']))
+    n=len(rows); wins=sum(1 for r in rows if r['correct']); pushes=sum(1 for r in rows if r['covered']==0.5)
+    acc=(wins/(n-pushes)) if (n-pushes)>0 else 0.0
 
-        # Outcome vs spread (push excluded)
-        if margin == vegas_line:
-            continue
-        y_cover = 1 if margin > vegas_line else 0
+    def fmt(x):
+        return f"{x:.2f}" if isinstance(x,(int,float)) else str(x)
 
-        # Model cover probability using same logistic calibration, on the line delta
-        # P(home covers) = sigmoid( a + b*(model_line - vegas_line) )
-        p_cover = sigmoid(a + b*(model_line - vegas_line))
-
-        # Model pick (home vs spread if edge positive)
-        pick = "HOME" if (model_line - vegas_line) > 0 else "AWAY"
-
-        rows_eval.append({
-            "game_id": gid,
-            "vegas_line_home": f"{vegas_line:+.1f}",
-            "model_line_home": f"{model_line:+.2f}",
-            "edge": f"{(model_line-vegas_line):+.2f}",
-            "home_score": str(hs),
-            "away_score": str(as_),
-            "margin": f"{margin:+.0f}",
-            "y_cover": "1" if y_cover==1 else "0",
-            "p_cover": f"{p_cover:.6f}",
-            "correct": "✓" if ((y_cover==1 and pick=='HOME') or (y_cover==0 and pick=='AWAY')) else "✗",
-        })
-
-        y_true.append(y_cover)
-        p_pred.append(p_cover)
-
-    if not rows_eval:
-        print("[FATAL] No overlapping finished games to evaluate."); raise SystemExit(1)
-
-    # Metrics
-    import math
-    n = len(y_true)
-    brier = sum((p_pred[i]-y_true[i])**2 for i in range(n))/n
-    eps = 1e-12
-    logloss = -sum(y_true[i]*math.log(max(p_pred[i],eps)) + (1-y_true[i])*math.log(max(1-p_pred[i],eps)) for i in range(n))/n
-    acc = sum(1 for i in range(n) if ( (p_pred[i] >= 0.5 and y_true[i]==1) or (p_pred[i] < 0.5 and y_true[i]==0) ))/n
-
-    # HTML
-    Path("reports").mkdir(parents=True, exist_ok=True)
-    out = Path(args.out)
-    def tr(cells, th=False):
-        tag = "th" if th else "td"
-        return "<tr>"+ "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
-
-    header = ["Game ID","Vegas","Model","Edge","Home","Away","Margin","Cover(Y)","P(cover)","Correct"]
-    body = "\n".join(tr([r["game_id"], r["vegas_line_home"], r["model_line_home"], r["edge"],
-                         r["home_score"], r["away_score"], r["margin"], r["y_cover"], r["p_cover"], r["correct"]])
-                     for r in rows_eval)
-
-    html = f"""<!doctype html><html><head><meta charset="utf-8">
-<title>Week Evaluation (ATS)</title>
+    # Render HTML (dark theme)
+    hdr = """<!doctype html><meta charset="utf-8"><title>ATS Eval</title>
 <style>
-body{{font:16px/1.3 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;color:#111}}
-h1{{margin:8px 4px}}
-table{{border-collapse:collapse;margin:8px}}
-th,td{{border:1px solid #888;padding:4px 8px}}
-th{{background:#eee}}
-</style></head><body>
-<h1>Week Evaluation (ATS)</h1>
-<p>Games: {n} | Accuracy: {acc:.3f} | Brier: {brier:.6f} | Logloss: {logloss:.6f}</p>
-<table>{tr(header, th=True)}{body}</table>
-</body></html>"""
-    out.write_text(html, encoding="utf-8")
-    print(f"[OK] Wrote ATS evaluation: {out}")
+body{background:#111;color:#eee;font:14px/1.4 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial}
+h1{margin:16px 12px}
+table{width:98%;margin:8px auto;border-collapse:collapse}
+th,td{padding:8px 10px;border-bottom:1px solid #222}
+th{background:#181818;text-align:left}
+tr:nth-child(even) td{background:#141414}
+.ok{color:#7dff7d}.bad{color:#ff8a8a}
+.mono{font-variant-numeric:tabular-nums}
+</style>"""
+    summary = f"<h1>ATS Evaluation</h1><p>Games: {n} | Wins: {wins} | Pushes: {pushes} | Accuracy (ex-push): {acc:.1%}</p>"
+    tbl = ["<table><tr><th>Date</th><th>Away</th><th>Home</th><th class='mono'>Vegas (H)</th><th class='mono'>Model (H)</th><th class='mono'>Final Δ (H−A)</th><th>Pick</th><th>Covered?</th><th>Correct</th></tr>"]
+    for r in rows:
+        covered = "HOME" if r['covered']==1 else ("AWAY" if r['covered']==0 else "PUSH")
+        ok = "ok" if r['correct'] else "bad"
+        tbl.append(
+            f"<tr><td>{r['date']}</td><td>{r['away']}</td><td>{r['home']}</td>"
+            f"<td class='mono'>{fmt(r['spread_home'])}</td><td class='mono'>{fmt(r['model_home'])}</td>"
+            f"<td class='mono'>{fmt(r['final_margin'])}</td><td>{r['pick']}</td>"
+            f"<td>{covered}</td><td class='{ok}'>{'✓' if r['correct'] else '✗'}</td></tr>"
+        )
+    tbl.append("</table>")
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(hdr+summary+"".join(tbl), encoding='utf-8')
+
+    if n==0:
+        print("[OK] No overlapping finished games yet; wrote empty ATS report.")
+    else:
+        print(f"[OK] ATS eval → {OUT} (rows={n}, wins={wins}, pushes={pushes}, acc={acc:.3f})")
 
 if __name__ == "__main__":
     main()
