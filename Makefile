@@ -34,6 +34,7 @@ week: preflight elo
 	@test -f out/model_board.csv || (echo "[FATAL] make_model_lines_and_board.py did not produce out/model_board.csv"; exit 1)
 	python3 scripts/msc_09_apply_bayes_weights.py
 	python3 scripts/lock_board_schema.py
+	python3 scripts/ensure_nonempty_csv.py out/model_board.csv
 	python3 scripts/ensure_model_line_calibration.py
 	python3 scripts/render_board.py
 	@test -f reports/board_week.html || (echo "[FATAL] render_board.py did not produce reports/board_week.html"; exit 1)
@@ -67,3 +68,4 @@ clean:
 	rm -f out/week_with_market.csv out/week_with_elo.csv out/model_board.csv
 	rm -f out/week_predictions.csv out/week_predictions_norm_* out/predictions_week.csv
 	rm -f out/results/finals.csv out/results/week_results.csv
+	test -f reports/eval_ats.html || (echo "[FATAL] ATS eval did not produce reports/eval_ats.html"; exit 1)
