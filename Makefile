@@ -14,12 +14,22 @@ preflight:
 align:
 	python3 scripts/verify_alignment.py
 
-# -------- Deterministic Elo (build before week) --------
+# -------- Deterministic Elo (snapshot if present; else compute) --------
+# Preferred, auditable snapshot:
+ELO_SNAPSHOT := data/elo/elo_ratings_by_date.csv
+ELO_OUT      := out/elo_ratings_by_date.csv
+
 elo:
-	@echo "[STEP] Build Elo → out/elo_ratings_by_date.csv"
+ifneq ("$(wildcard $(ELO_SNAPSHOT))","")
+	@echo "[STEP] Using pinned Elo snapshot: $(ELO_SNAPSHOT)"
+	mkdir -p out
+	cp -f "$(ELO_SNAPSHOT)" "$(ELO_OUT)"
+else
+	@echo "[STEP] Computing Elo → $(ELO_OUT)"
 	python3 scripts/compute_elo.py
-	@test -f out/elo_ratings_by_date.csv || (echo "[FATAL] scripts/compute_elo.py did not write out/elo_ratings_by_date.csv"; exit 1)
-	@echo "[OK] Elo ready"
+endif
+	@test -f "$(ELO_OUT)" || (echo "[FATAL] Elo not produced at $(ELO_OUT)"; exit 1)
+	@echo "[OK] Elo ready: $(ELO_OUT)"
 
 # -------- Weekly build (data → board). Requires START, END and Elo --------
 week: elo
