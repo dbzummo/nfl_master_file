@@ -42,6 +42,7 @@ week: elo
 	python3 scripts/update_injuries_week.py
 	python3 scripts/compute_injury_adjustments.py
 	python3 scripts/make_model_lines_and_board.py
+	@test -f out/model_board.csv || (echo "[FATAL] make_model_lines_and_board.py did not produce out/model_board.csv"; exit 1)
 	python3 scripts/msc_09_apply_bayes_weights.py
 	python3 scripts/lock_board_schema.py
 	python3 scripts/ensure_model_line_calibration.py
