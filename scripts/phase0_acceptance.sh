@@ -15,7 +15,8 @@ must "out/2025w01/results/finals.csv"
 must "out/2025w01/week_predictions.csv"
 must "out/2025w01/model_board.csv"
 must "out/2025w01/run_manifest.json"
-must "out/2025w01/checksums.txt"
+must "out/2025w01/_phase0_logs/2025w01_pass1.log"
+must "out/2025w01/_phase0_logs/2025w01_pass2.log"
 must "reports/2025w01/board_week.html"
 must "reports/2025w01/eval_ats.html"
 
@@ -28,12 +29,13 @@ must "out/2025w02/results/finals.csv"
 must "out/2025w02/week_predictions.csv"
 must "out/2025w02/model_board.csv"
 must "out/2025w02/run_manifest.json"
-must "out/2025w02/checksums.txt"
+must "out/2025w02/_phase0_logs/2025w02_pass1.log"
+must "out/2025w02/_phase0_logs/2025w02_pass2.log"
 must "reports/2025w02/board_week.html"
 must "reports/2025w02/eval_ats.html"
 
 echo "[STEP] Commit artifacts"
-git add config/week_windows_2025.json out/2025w01 out/2025w02 reports/2025w01 reports/2025w02 artifacts/phase0 || true
+git add config/week_windows_2025.json out/2025w01 out/2025w02 reports/2025w01 reports/2025w02
 git commit -m "Phase 0 baseline: freeze 2025w01 + 2025w02 (reproducible, checksums logged)" || true
 
 TAG="baseline/2025w01w02"

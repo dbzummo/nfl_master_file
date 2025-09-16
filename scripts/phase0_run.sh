@@ -1,26 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ===============================
-# Phase 0 Runner — Week Freeze & Reproducibility (hardened)
-# - Uses a clean git worktree at current commit
-# - Inherits env (MSF_KEY, etc.) and activates repo .venv if present
-# - Resolves week window strictly from config/week_windows_2025.json
-# - Fails CLOSED on any error; no digest compare unless pass1 succeeded
-# ===============================
-
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 CONFIG="config/week_windows_2025.json"
 [[ -f "$CONFIG" ]] || { echo "[FATAL] Missing $CONFIG"; exit 1; }
 
-# Require a clean tree (Prime Directive)
 git diff --quiet && git diff --cached --quiet || { echo "[FATAL] Git working tree must be clean."; exit 1; }
-
 : "${WEEK:?Usage: WEEK=1 ./scripts/phase0_run.sh}"
 
-# Resolve window
 START="$(jq -r --arg w "$WEEK" '.[$w].start' "$CONFIG")"
 END="$(jq -r --arg w "$WEEK" '.[$w].end' "$CONFIG")"
 SEASON="$(jq -r --arg w "$WEEK" '.[$w].season' "$CONFIG")"
@@ -30,13 +19,11 @@ for v in START END SEASON WEEK_TAG EXPECTED_FINALS; do
   [[ -n "${!v}" && "${!v}" != "null" ]] || { echo "[FATAL] Missing $v for week=$WEEK"; exit 1; }
 done
 
-# checksum utility
 if command -v sha256sum >/dev/null 2>&1; then SHACMD="sha256sum"; else SHACMD="shasum -a 256"; fi
 
 OUT_DIR="$REPO_ROOT/out/$WEEK_TAG"
 REPORTS_DIR="$REPO_ROOT/reports/$WEEK_TAG"
-ART_DIR="$REPO_ROOT/artifacts/phase0"
-mkdir -p "$OUT_DIR" "$REPORTS_DIR" "$ART_DIR"
+mkdir -p "$OUT_DIR" "$REPORTS_DIR"
 
 WORKTREES_DIR="$REPO_ROOT/.phase0_worktrees"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -49,32 +36,34 @@ git worktree add --detach "$WT_PATH" "$GIT_SHA" >/dev/null
 cleanup(){ git worktree remove --force "$WT_PATH" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-# Carry parent env into worktree subprocesses
+# LOGS live inside the worktree while running (keeps main tree clean)
+WT_LOG_DIR="$WT_PATH/_phase0_logs"
+mkdir -p "$WT_LOG_DIR"
+
+# carry MSF_* if present; window vars are set below anyway
 ENV_EXPORT=()
-for name in MSF_KEY MSF_PASS START END SEASON; do
+for name in MSF_KEY MSF_PASS; do
   [[ -n "${!name-}" ]] && ENV_EXPORT+=( "$name=${!name}" )
 done
 
 run_once() {
-  local pass="$1"           # pass1 | pass2
+  local pass="$1"
   local tmp="$WT_PATH/.tmp_${pass}"
-  local runlog="$ART_DIR/${WEEK_TAG}_${pass}.log"
+  local runlog="$WT_LOG_DIR/${WEEK_TAG}_${pass}.log"
   mkdir -p "$tmp"
 
   pushd "$WT_PATH" >/dev/null
 
-  # Activate repo venv if present at REPO_ROOT/.venv
+  # Activate repo venv if present
   if [[ -x "$REPO_ROOT/.venv/bin/python" ]]; then
     # shellcheck disable=SC1091
     source "$REPO_ROOT/.venv/bin/activate"
   fi
 
-  # Fresh outputs inside worktree
   rm -rf out reports || true
   mkdir -p out reports out/results out/msf_details
 
-  # Export window/env to subprocesses (in addition to inherited MSF_* vars)
-  export START="$START" END="$END" SEASON="$SEASON"
+  export START="$START" END="$END" SEASON="$SEASON" ${ENV_EXPORT[@]+"${ENV_EXPORT[@]}"}
 
   set -o pipefail
   {
@@ -82,20 +71,15 @@ run_once() {
     echo "[ENV] Python: $(python3 -V 2>/dev/null || true)"
     echo "[ENV] MSF_KEY=${MSF_KEY:+SET}${MSF_KEY:-UNSET}"
 
-    # Always fetch schedule for the resolved window (single source of truth)
     if [[ -x scripts/fetch_msf_week.py ]]; then
       python3 scripts/fetch_msf_week.py --start "$START" --end "$END" --season "$SEASON"
     fi
-
-    # Ensure finals for this window exist (script is idempotent)
     if [[ -x scripts/finals_for_window.py ]]; then
       python3 scripts/finals_for_window.py
     fi
 
-    # Full pipeline
     make all
 
-    # Finals QA (hard stop on mismatch)
     FINALS="out/results/finals.csv"
     [[ -f "$FINALS" ]] || { echo "[FATAL] finals.csv not found"; exit 70; }
     rows="$(wc -l < "$FINALS" | tr -d ' ')"
@@ -103,12 +87,10 @@ run_once() {
     echo "[QA] finals rows=$rows (expected $EXPECTED_FINALS)"
     [[ "$rows" -eq "$EXPECTED_FINALS" ]] || { echo "[FATAL] Finals count mismatch ($rows != $EXPECTED_FINALS)"; exit 71; }
 
-    # Collect artifacts
     mkdir -p "$tmp/out" "$tmp/reports"
     rsync -aL out/ "$tmp/out/"
     rsync -aL reports/ "$tmp/reports/"
 
-    # Checksums (sorted, stable)
     (
       cd "$tmp"
       { find out -type f -print0; find reports -type f -print0; } \
@@ -118,7 +100,6 @@ run_once() {
       $SHACMD checksums.txt | awk '{print $1}' > manifest.sha256
     )
 
-    # No symlinks in tmp artifacts
     if find "$tmp/out" "$tmp/reports" -type l | grep -q .; then
       echo "[FATAL] Symlinks detected in tmp artifacts"; exit 74
     fi
@@ -127,16 +108,13 @@ run_once() {
   } | tee "$runlog"
 
   popd >/dev/null
-
-  # Require digest files to exist; otherwise fail closed
   [[ -s "$tmp/manifest.sha256" && -s "$tmp/checksums.txt" ]] \
-    || { echo "[FATAL] Missing manifest/checksums for $pass (prior step failed). See $runlog"; exit 76; }
+    || { echo "[FATAL] Missing manifest/checksums for $pass. See $runlog"; exit 76; }
 
   echo "$tmp"
 }
 
-# ===== Execute two passes; do NOT proceed if pass1 fails =====
-p1="$(run_once pass1)"    # exits non-zero on any failure
+p1="$(run_once pass1)"    # fail-closed if anything breaks
 p2="$(run_once pass2)"
 
 d1="$(cat "$p1/manifest.sha256")"
@@ -149,10 +127,11 @@ if [[ "$d1" != "$d2" ]]; then
 fi
 echo "[OK] Reproducibility PASSED."
 
-# Install pass1 artifacts into week partitions
+# Install artifacts (from pass1) into week partitions; also copy logs
 rsync -aL --delete "$p1/out/" "$OUT_DIR/"
 rsync -aL --delete "$p1/reports/" "$REPORTS_DIR/"
-cp -f "$p1/checksums.txt" "$OUT_DIR/checksums.txt"
+mkdir -p "$OUT_DIR/_phase0_logs"
+cp -f "$WT_LOG_DIR/"* "$OUT_DIR/_phase0_logs/" 2>/dev/null || true
 
 # Write manifest
 cat > "$OUT_DIR/run_manifest.json" <<JSON
