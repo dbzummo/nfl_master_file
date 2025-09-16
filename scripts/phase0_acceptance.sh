@@ -6,7 +6,9 @@ cd "$REPO_ROOT"
 require_clean(){ git diff --quiet && git diff --cached --quiet || { echo "[FATAL] git not clean"; exit 1; }; }
 must(){ [[ -e "$1" ]] || { echo "[FATAL] Missing: $1"; exit 2; }; }
 
+# Clean only at the very start
 require_clean
+
 echo "[STEP] WEEK=1"
 WEEK=1 ./scripts/phase0_run.sh
 
@@ -20,7 +22,7 @@ must "out/2025w01/_phase0_logs/2025w01_pass2.log"
 must "reports/2025w01/board_week.html"
 must "reports/2025w01/eval_ats.html"
 
-require_clean
+# Do NOT require clean again here — W1 artifacts are now present
 echo "[STEP] WEEK=2"
 WEEK=2 ./scripts/phase0_run.sh
 
