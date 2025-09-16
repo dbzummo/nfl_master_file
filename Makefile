@@ -1,5 +1,6 @@
 export SEASON ?= 2025-regular
 export WEEK_TAG ?= auto
+export PYTHONPATH := $(CURDIR)
 
 .PHONY: all preflight elo week emit_preds align finals eval_ats eval_su eval_week clean
 
