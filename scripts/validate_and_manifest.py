@@ -13,6 +13,8 @@ def main()->None:
     if not os.path.exists(CAL_PATH): print("[FATAL] Missing calibration JSON", file=sys.stderr); sys.exit(1)
     a,b=_read_cal(); sanity_roundtrip(0.0,a,b)
     with open(in_csv,newline="",encoding="utf-8") as f: rows=list(csv.DictReader(f))
+    if not rows:
+        print("[FATAL] model_board.csv has no rows post-lock", file=sys.stderr); sys.exit(2)
     # ensure p_home_model exists
     for r in rows:
         if not r.get("p_home_model"):
