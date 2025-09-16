@@ -1,67 +1,58 @@
-mkdir -p scripts overrides artifacts reports out
-
-cat > scripts/fetch_week_msf.py <<'PY'
 #!/usr/bin/env python3
-import os, sys, argparse, requests, pandas as pd
+import os, sys, csv, json, datetime, pathlib, requests
 
-MSF = "https://api.mysportsfeeds.com/v2.1/pull/nfl/2025-regular/games.json"
-COLS = ["date","week","away","home","status","away_score","home_score",
-        "market_spread","market_total","home_win_prob"]
-
-def get_json(start, end):
-    key = os.environ.get("MSF_KEY"); pwd = os.environ.get("MSF_PASS","MYSPORTSFEEDS")
-    if not key: sys.exit("[error] MSF_KEY missing")
-    r = requests.get(MSF, params={"date": f"{start}-{end}"}, auth=(key, pwd), timeout=30)
-    if r.status_code != 200: sys.exit(f"[error] MSF HTTP {r.status_code} — {r.text[:200]}")
-    return r.json()
-
-def parse_games(js):
-    rows = []
-    for g in js.get("games", []):
-        s = g["schedule"]; sc = g.get("score")
-        date = pd.to_datetime(s["startTime"], utc=True).date().strftime("%Y-%m-%d")
-        status = "FINAL" if (sc or {}).get("isCompleted") else ((sc or {}).get("currentQuarter") or "PRE")
-        away = s["awayTeam"]["abbreviation"]; home = s["homeTeam"]["abbreviation"]
-        rows.append(dict(
-            date=date, week=s.get("week"), away=away, home=home, status=status,
-            away_score=(sc or {}).get("awayScoreTotal"), home_score=(sc or {}).get("homeScoreTotal"),
-            market_spread=None, market_total=None, home_win_prob=None
-        ))
-    return pd.DataFrame(rows)
-
-def ingest_model_prob(df):
-    pth = "out/predictions_week_calibrated_blend.csv"
-    if not os.path.exists(pth): return df
-    p = pd.read_csv(pth)
-    p["date"] = pd.to_datetime(p["date"]).dt.strftime("%Y-%m-%d")
-    p = p.rename(columns={"away_team":"away","home_team":"home"})
-    return df.merge(p[["date","away","home","home_win_prob"]], on=["date","away","home"], how="left")
-
-def ingest_market_lines(df):
-    pth = "overrides/market_lines.csv"
-    if not os.path.exists(pth): return df
-    m = pd.read_csv(pth, dtype={"market_spread":"float64","market_total":"float64"})
-    m["date"] = pd.to_datetime(m["date"]).dt.strftime("%Y-%m-%d")
-    return df.merge(m, on=["date","away","home"], how="left", suffixes=("","_m")).assign(
-        market_spread=lambda d: d["market_spread"].combine_first(d["market_spread_m"]),
-        market_total=lambda d: d["market_total"].combine_first(d["market_total_m"])
-    ).drop(columns=["market_spread_m","market_total_m"], errors="ignore")
+def arg(name, default=None):
+    if name in os.environ and os.environ[name]:
+        return os.environ[name]
+    try:
+        i = sys.argv.index(f"--{name.lower()}") + 1
+        return sys.argv[i]
+    except (ValueError, IndexError):
+        return default
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--start", required=True, help="YYYYMMDD")
-    ap.add_argument("--end", required=True, help="YYYYMMDD")
-    a = ap.parse_args()
-    js = get_json(a.start, a.end)
-    df = parse_games(js)
-    if df.empty: sys.exit("[error] no MSF games in that window")
-    df = ingest_model_prob(df)
-    df = ingest_market_lines(df)
-    df = df[COLS]
-    os.makedirs("out", exist_ok=True)
-    df.to_csv("out/week_canonical.csv", index=False)
-    print(f"[ok] wrote out/week_canonical.csv rows={len(df)} window {df.date.min()}→{df.date.max()}")
+    start  = arg("START")
+    end    = arg("END")
+    season = arg("SEASON", "2025-regular")
+    if not (start and end):
+        print("[FATAL] need --start and --end (YYYYMMDD) or env START/END", file=sys.stderr)
+        sys.exit(2)
+
+    key = os.environ.get("MSF_KEY")
+    pw  = os.environ.get("MSF_PASS", "MYSPORTSFEEDS")
+    if not key:
+        print("[FATAL] MSF_KEY is required in env", file=sys.stderr)
+        sys.exit(3)
+
+    d0 = datetime.datetime.strptime(start, "%Y%m%d")
+    d1 = datetime.datetime.strptime(end,   "%Y%m%d")
+
+    out_dir = pathlib.Path("out/msf_details")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out = out_dir / "msf_week.csv"
+
+    rows = []
+    for i in range((d1 - d0).days + 1):
+        d = (d0 + datetime.timedelta(days=i)).strftime("%Y%m%d")
+        url = f"https://api.mysportsfeeds.com/v2.1/pull/nfl/{season}/date/{d}/games.json"
+        r = requests.get(url, auth=(key, pw), timeout=30)
+        r.raise_for_status()
+        for g in r.json().get("games", []):
+            s   = g.get("schedule", {}) or {}
+            gid = str(s.get("id") or s.get("msfGameId") or "")
+            home = (s.get("homeTeam") or {}).get("abbreviation") or ""
+            away = (s.get("awayTeam") or {}).get("abbreviation") or ""
+            wk   = s.get("week", {})
+            week = (wk.get("week") if isinstance(wk, dict) else wk) or ""
+            # prefer UTC-ish date if present
+            date = s.get("startTimeUTC") or s.get("startTime") or s.get("startTimeLocal") or ""
+            rows.append({"date": date[:10], "week": week, "away_team": away, "home_team": home, "game_id": gid})
+
+    with out.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=["date","week","away_team","home_team","game_id"])
+        w.writeheader(); w.writerows(rows)
+
+    print(f"[OK] wrote {out} rows={len(rows)}")
+
 if __name__ == "__main__":
     main()
-PY
-chmod +x scripts/fetch_week_msf.py
