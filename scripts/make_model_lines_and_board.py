@@ -202,6 +202,21 @@ def main():
     rest = [c for c in elo.columns if c not in cols_present]
     out = elo[cols_present + rest].copy()
 
+    # --- Phase 0 schema guarantees for locker/validator ---
+    from scripts._board_utils_phase0 import read_cal, line_from_prob, prob_from_home_line, synth_game_id
+    a,b = read_cal()
+    # game_id (deterministic synthetic if absent)
+    if "game_id" not in out.columns:
+        out["game_id"] = out.apply(synth_game_id, axis=1)
+    # model_line_home derived from p_home_model via current calibration
+    if "model_line_home" not in out.columns:
+        out["model_line_home"] = out["p_home_model"].apply(lambda p: round(line_from_prob(p, a, b), 2))
+    # p_home_market deterministically from vegas_line_home (even if vegas_line_home==0 fallback)
+    if "p_home_market" not in out.columns:
+        out["p_home_market"] = out["vegas_line_home"].apply(lambda x: prob_from_home_line(x, a, b))
+    # confidence present already; ensure numeric
+    out["confidence"] = pd.to_numeric(out.get("confidence", 0.0), errors="coerce").fillna(0.0)
+
     # Final sanity
     if out.empty:
         fatal("board is empty after merges — cannot proceed")
