@@ -48,6 +48,7 @@ week: elo
 	python3 scripts/ensure_model_line_calibration.py
 	python3 scripts/validate_and_manifest.py
 	python3 scripts/render_board.py
+	@test -f reports/board_week.html || (echo "[FATAL] render_board.py did not produce reports/board_week.html"; exit 1)
 	@echo "[OK] Week artifacts → reports/board_week.html"
 
 # Emit week_predictions.csv **from the board** (post-blend) so eval matches exactly
