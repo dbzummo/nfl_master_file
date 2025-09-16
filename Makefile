@@ -1,9 +1,9 @@
 export SEASON ?= 2025-regular
 export WEEK_TAG ?= auto
 
-.PHONY: all preflight week emit_preds align finals eval_ats eval_su eval_week clean
+.PHONY: all preflight elo week emit_preds align finals eval_ats eval_su eval_week clean
 
-# -------- One command to do everything accurately --------
+# -------- One command to do everything accurately (no hidden state) --------
 all: preflight week emit_preds align finals eval_ats
 	@echo "[OK] ALL DONE → Board: reports/board_week.html | ATS eval: reports/eval_ats.html"
 
@@ -14,8 +14,15 @@ preflight:
 align:
 	python3 scripts/verify_alignment.py
 
-# -------- Weekly build (data → board) --------
-week:
+# -------- Deterministic Elo (build before week) --------
+elo:
+	@echo "[STEP] Build Elo → out/elo_ratings_by_date.csv"
+	python3 scripts/compute_elo.py
+	@test -f out/elo_ratings_by_date.csv || (echo "[FATAL] scripts/compute_elo.py did not write out/elo_ratings_by_date.csv"; exit 1)
+	@echo "[OK] Elo ready"
+
+# -------- Weekly build (data → board). Requires START, END and Elo --------
+week: elo
 	@test -n "$(START)" -a -n "$(END)" || (echo "[FATAL] set START and END (YYYYMMDD)"; exit 1)
 	python3 scripts/fetch_odds.py --start "$(START)" --end "$(END)" --season "$(SEASON)"
 	python3 scripts/join_week_with_elo.py
@@ -54,6 +61,7 @@ eval_week: emit_preds align finals eval_su eval_ats
 	@echo "[OK] Eval artifacts written to reports/"
 
 clean:
+	rm -f out/elo_ratings_by_date.csv
 	rm -f out/week_with_market.csv out/week_with_elo.csv out/model_board.csv
 	rm -f out/week_predictions.csv out/week_predictions_norm_* out/predictions_week.csv
 	rm -f out/results/finals.csv out/results/week_results.csv
