@@ -14,8 +14,7 @@ preflight:
 align:
 	python3 scripts/verify_alignment.py
 
-# -------- Deterministic Elo (snapshot if present; else compute) --------
-# Preferred, auditable snapshot:
+# -------- Deterministic Elo (prefer pinned snapshot; else compute then convert) --------
 ELO_SNAPSHOT := data/elo/elo_ratings_by_date.csv
 ELO_OUT      := out/elo_ratings_by_date.csv
 
@@ -25,8 +24,9 @@ ifneq ("$(wildcard $(ELO_SNAPSHOT))","")
 	mkdir -p out
 	cp -f "$(ELO_SNAPSHOT)" "$(ELO_OUT)"
 else
-	@echo "[STEP] Computing Elo → $(ELO_OUT)"
+	@echo "[STEP] Computing Elo and converting → $(ELO_OUT)"
 	python3 scripts/compute_elo.py
+	python3 scripts/elo_make_by_date.py
 endif
 	@test -f "$(ELO_OUT)" || (echo "[FATAL] Elo not produced at $(ELO_OUT)"; exit 1)
 	@echo "[OK] Elo ready: $(ELO_OUT)"
@@ -71,7 +71,7 @@ eval_week: emit_preds align finals eval_su eval_ats
 	@echo "[OK] Eval artifacts written to reports/"
 
 clean:
-	rm -f out/elo_ratings_by_date.csv
+	rm -f out/elo_ratings_by_date.csv out/elo_ratings.csv out/elo_games_enriched.csv out/elo_season_start.csv
 	rm -f out/week_with_market.csv out/week_with_elo.csv out/model_board.csv
 	rm -f out/week_predictions.csv out/week_predictions_norm_* out/predictions_week.csv
 	rm -f out/results/finals.csv out/results/week_results.csv
