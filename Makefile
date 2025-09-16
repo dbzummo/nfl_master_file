@@ -1,44 +1,35 @@
 export SEASON ?= 2025-regular
-export WEEK_TAG ?= auto
 export PYTHONPATH := $(CURDIR)
 
-.PHONY: all preflight elo week emit_preds align finals eval_ats eval_su eval_week clean
+.PHONY: all preflight week elo emit_preds align finals eval_ats eval_su clean
 
-# -------- One command to do everything accurately (no hidden state) --------
-all: preflight week emit_preds align finals eval_ats
-	@echo "[OK] ALL DONE → Board: reports/board_week.html | ATS eval: reports/eval_ats.html"
+# Top-level convenience
+all: week
+	@echo "[OK] ALL DONE"
 
-# -------- Safety rails --------
+# Safety rails
 preflight:
 	python3 scripts/preflight.py
 
-align:
-	python3 scripts/verify_alignment.py
-
-# -------- Deterministic Elo (prefer pinned snapshot; else compute then convert) --------
-ELO_SNAPSHOT := data/elo/elo_ratings_by_date.csv
-ELO_OUT      := out/elo_ratings_by_date.csv
-
+# Deterministic Elo: prefer pinned snapshot; else compute+convert
 elo:
-ifneq ("$(wildcard $(ELO_SNAPSHOT))","")
-	@echo "[STEP] Using pinned Elo snapshot: $(ELO_SNAPSHOT)"
-	mkdir -p out
-	cp -f "$(ELO_SNAPSHOT)" "$(ELO_OUT)"
-else
-	@echo "[STEP] Computing Elo and converting → $(ELO_OUT)"
-	python3 scripts/compute_elo.py
-	python3 scripts/elo_make_by_date.py
-endif
-	@test -f "$(ELO_OUT)" || (echo "[FATAL] Elo not produced at $(ELO_OUT)"; exit 1)
-	@echo "[OK] Elo ready: $(ELO_OUT)"
+	@set -euo pipefail; \
+	if [ -f data/elo/elo_ratings_by_date.csv ]; then \
+	  cp -f data/elo/elo_ratings_by_date.csv out/elo_ratings_by_date.csv; \
+	  echo "[OK] Elo snapshot → out/elo_ratings_by_date.csv"; \
+	else \
+	  echo "[STEP] Computing Elo and converting → out/elo_ratings_by_date.csv"; \
+	  python3 scripts/compute_elo.py; \
+	  python3 scripts/elo_make_by_date.py; \
+	fi; \
+	test -s out/elo_ratings_by_date.csv || (echo "[FATAL] no Elo by-date CSV"; exit 1)
 
-# -------- Weekly build (data → board). Requires START, END and Elo --------
-week: elo
+# One deterministic, fail-closed weekly build that produces reports/board_week.html and ATS eval
+week: preflight elo
 	@test -n "$(START)" -a -n "$(END)" || (echo "[FATAL] set START and END (YYYYMMDD)"; exit 1)
 	python3 scripts/fetch_odds.py --start "$(START)" --end "$(END)" --season "$(SEASON)"
 	python3 scripts/join_week_with_elo.py
 	python3 scripts/calibrate_probs.py
-	-bash scripts/pull_injuries_and_adjust.sh || true
 	python3 scripts/update_injuries_week.py
 	python3 scripts/compute_injury_adjustments.py
 	python3 scripts/make_model_lines_and_board.py
@@ -49,30 +40,30 @@ week: elo
 	python3 scripts/validate_and_manifest.py
 	python3 scripts/render_board.py
 	@test -f reports/board_week.html || (echo "[FATAL] render_board.py did not produce reports/board_week.html"; exit 1)
-	@echo "[OK] Week artifacts → reports/board_week.html"
+	# downstream artifacts needed by acceptance
+	python3 scripts/emit_week_predictions_from_board.py
+	python3 scripts/verify_alignment.py
+	python3 scripts/finals_for_window.py
+	python3 scripts/msc_07_eval_ats.py
+	@echo "[OK] Week artifacts → reports/board_week.html and reports/eval_ats.html"
 
-# Emit week_predictions.csv **from the board** (post-blend) so eval matches exactly
+# Legacy phony targets (kept for compatibility)
 emit_preds:
 	python3 scripts/emit_week_predictions_from_board.py
 
-# Build finals.csv for START..END (used by SU & ATS eval)
+align:
+	python3 scripts/verify_alignment.py
+
 finals:
 	python3 scripts/finals_for_window.py
 
-# -------- Evaluations --------
-# ATS = source of truth (spread applied)
 eval_ats:
 	python3 scripts/msc_07_eval_ats.py
 	@echo "[OK] ATS eval → reports/eval_ats.html"
 
-# SU = diagnostic only (no spread)
 eval_su:
 	python3 scripts/generate_scorecards.py
 	@echo "[OK] SU eval → reports/*_eval.html"
-
-# Convenience: do both SU+ATS after emit_preds+finals (kept for compatibility)
-eval_week: emit_preds align finals eval_su eval_ats
-	@echo "[OK] Eval artifacts written to reports/"
 
 clean:
 	rm -f out/elo_ratings_by_date.csv out/elo_ratings.csv out/elo_games_enriched.csv out/elo_season_start.csv

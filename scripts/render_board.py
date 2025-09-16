@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os, html
+import sys, html
 from pathlib import Path
 import pandas as pd
 
@@ -17,22 +17,17 @@ def main():
         df = pd.read_csv(BOARD)
     except Exception as e:
         fatal(f"render_board.py: failed reading board: {e}")
-
     if df.empty:
         fatal("render_board.py: board is empty; refusing to write report")
-
-    # Minimal, deterministic HTML render (no external assets, no randomness)
     OUTDIR.mkdir(parents=True, exist_ok=True)
+
     cols = [c for c in [
         "date","week","away_team","home_team",
-        "p_home_model","vegas_line_home",
-        "elo_exp_home","elo_diff_pre",
-        "inj_home_pts","inj_away_pts",
-        "model_line_home","edge_adj","confidence","confidence_adj",
+        "p_home_model","vegas_line_home","model_line_home",
+        "elo_exp_home","elo_diff_pre","elo_home_pre","elo_away_pre",
+        "inj_home_pts","inj_away_pts","confidence","confidence_adj","edge_adj",
         "msf_game_id"
     ] if c in df.columns]
-
-    # Round a few numeric columns for display consistency
     for c, nd in [("p_home_model",6),("elo_exp_home",6),("vegas_line_home",2),
                   ("elo_diff_pre",1),("inj_home_pts",2),("inj_away_pts",2),
                   ("confidence",4),("confidence_adj",4),("model_line_home",2),("edge_adj",2)]:
