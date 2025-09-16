@@ -1,0 +1,5 @@
+{
+  "a": -0.1794,
+  "b": -0.1655,
+  "notes": "P(home)=sigmoid(a + b*home_line). Inverse: line=(logit(p)-a)/b. Source: historical fit."
+}

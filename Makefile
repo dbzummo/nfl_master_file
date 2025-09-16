@@ -44,6 +44,7 @@ week: elo
 	python3 scripts/make_model_lines_and_board.py
 	python3 scripts/msc_09_apply_bayes_weights.py
 	python3 scripts/lock_board_schema.py
+	python3 scripts/ensure_model_line_calibration.py
 	python3 scripts/validate_and_manifest.py
 	python3 scripts/render_board.py
 	@echo "[OK] Week artifacts → reports/board_week.html"

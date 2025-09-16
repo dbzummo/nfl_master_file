@@ -1,122 +1,118 @@
 #!/usr/bin/env python3
 """
-Build the canonical model board for the current week.
+Build canonical out/model_board.csv for the resolved week.
 
-Inputs:
-  - out/week_with_elo.csv                (required)
-  - out/week_predictions.csv             (optional; supplies p_home_model)
-  - out/week_with_market.csv / odds*.csv (optional; supplies vegas_line_home)
+Requires:
+  - out/week_with_elo.csv  (date, week, home_team, away_team, elo_exp_home, msf_game_id?)
+  - out/week_predictions.csv (optional; p_home_model)  -- else fallback to elo_exp_home
+  - out/week_with_market.csv (optional; vegas_line_home) -- else 0.0
+  - out/calibration/model_line_calibration.json (a,b) for transforms
 
-Output:
-  - out/model_board.csv  (deterministic, fail-closed)
+Emits the columns expected by validate_and_manifest.py:
+  game_id, vegas_line_home, model_line_home, p_home_market, p_home_model,
+  confidence, (plus pass-throughs like inj_* if later joined)
 """
-import sys, pathlib
+import sys, json, pathlib
 import pandas as pd
-from typing import Optional
+from src.nfl_model.probs import prob_from_home_line, line_from_prob
 
 OUT = pathlib.Path("out/model_board.csv")
+CAL = pathlib.Path("out/calibration/model_line_calibration.json")
 
 def fatal(msg, code=1):
     print(f"[FATAL] {msg}", file=sys.stderr)
     sys.exit(code)
 
-def read_week_with_elo() -> pd.DataFrame:
+def read_cal():
+    if not CAL.exists():
+        fatal(f"Missing {CAL}. Run scripts/ensure_model_line_calibration.py first.", 31)
+    d = json.loads(CAL.read_text(encoding="utf-8"))
+    return float(d["a"]), float(d["b"])
+
+def read_week_with_elo():
     p = pathlib.Path("out/week_with_elo.csv")
-    if not p.exists():
-        fatal("Missing out/week_with_elo.csv (run join_week_with_elo.py first).", 21)
+    if not p.exists(): fatal("Missing out/week_with_elo.csv (run join_week_with_elo.py)", 21)
     df = pd.read_csv(p)
     need = {"date","week","home_team","away_team","elo_exp_home"}
-    if not need.issubset(df.columns):
-        missing = sorted(need - set(df.columns))
-        fatal(f"out/week_with_elo.csv missing columns: {missing}", 22)
-    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.date
-    df = df.dropna(subset=["date","home_team","away_team"]).copy()
+    miss = sorted(need - set(df.columns))
+    if miss: fatal(f"out/week_with_elo.csv missing columns: {miss}", 22)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y%m%d")
+    df["week"] = pd.to_numeric(df["week"], errors="coerce").astype("Int64")
     return df
 
-def read_market() -> Optional[pd.DataFrame]:
-    cands = [
-        "out/week_with_market.csv",
-        "out/odds_week.csv",
-        "out/odds/odds_week.csv",
-    ]
-    for path in cands:
-        p = pathlib.Path(path)
-        if not p.exists():
-            continue
-        try:
+def read_preds():
+    p = pathlib.Path("out/week_predictions.csv")
+    if not p.exists(): return None
+    w = pd.read_csv(p)
+    for col in ("p_home_model","p_home","p_model_home"):
+        if col in w.columns:
+            w = w.rename(columns={col:"p_home_model"})
+            break
+    if "p_home_model" not in w.columns: return None
+    w["date"] = pd.to_datetime(w["date"], errors="coerce").dt.strftime("%Y%m%d")
+    return w[["date","home_team","away_team","week","p_home_model"]].copy()
+
+def read_market():
+    for cand in ("out/week_with_market.csv","out/odds/week_odds.csv","out/odds_week.csv","out/odds/odds_week.csv"):
+        p = pathlib.Path(cand)
+        if p.exists():
             m = pd.read_csv(p)
             col = next((k for k in ("vegas_line_home","spread_home","home_spread","line_home") if k in m.columns), None)
-            if not col:
-                continue
-            keep = [k for k in ["date","home_team","away_team", col] if k in m.columns]
-            m = m[keep].copy()
-            m.rename(columns={col:"vegas_line_home"}, inplace=True)
-            m["date"] = pd.to_datetime(m["date"], errors="coerce").dt.date
+            if not col: continue
+            m = m.rename(columns={col:"vegas_line_home"})
+            m["date"] = pd.to_datetime(m["date"], errors="coerce").dt.strftime("%Y%m%d")
             m["vegas_line_home"] = pd.to_numeric(m["vegas_line_home"], errors="coerce")
-            return m
-        except Exception:
-            continue
+            return m[["date","home_team","away_team","vegas_line_home"]].copy()
     return None
 
-def read_preds() -> Optional[pd.DataFrame]:
-    p = pathlib.Path("out/week_predictions.csv")
-    if not p.exists():
-        return None
-    try:
-        w = pd.read_csv(p)
-        col = next((k for k in ("p_home_model","p_home","p_model_home") if k in w.columns), None)
-        if not col:
-            return None
-        keep = [k for k in ["date","home_team","away_team","week", col] if k in w.columns]
-        w = w[keep].copy()
-        w.rename(columns={col:"p_home_model"}, inplace=True)
-        w["date"] = pd.to_datetime(w["date"], errors="coerce").dt.date
-        w["p_home_model"] = pd.to_numeric(w["p_home_model"], errors="coerce")
-        return w
-    except Exception:
-        return None
-
 def main():
+    a,b = read_cal()
     base = read_week_with_elo()
+    preds = read_preds()
     market = read_market()
-    preds  = read_preds()
 
     board = base.copy()
+    # Attach predictions
     board["p_home_model"] = pd.NA
-    board["vegas_line_home"] = 0.0
-
-    if preds is not None and not preds.empty:
+    if preds is not None:
         board = board.merge(preds, on=["date","home_team","away_team","week"], how="left")
-        filled = board["p_home_model"].notna().sum()
-        print(f"[BOARD] merged calibrated predictions: filled {filled} rows")
-    else:
-        print("[BOARD] no calibrated predictions found; will derive p_home_model from elo_exp_home")
-
-    # Robust numeric handling with deterministic fallbacks
+    # Fallback: elo expectation if no calibrated probs
     board["elo_exp_home"] = pd.to_numeric(board["elo_exp_home"], errors="coerce")
     board["p_home_model"] = pd.to_numeric(board["p_home_model"], errors="coerce")
-    board["p_home_model"] = board["p_home_model"].fillna(board["elo_exp_home"])
-    board["p_home_model"] = board["p_home_model"].fillna(0.5).astype(float)  # final guarantee
+    board["p_home_model"] = board["p_home_model"].fillna(board["elo_exp_home"]).fillna(0.5).astype(float)
 
-    if market is not None and not market.empty:
+    # Attach market spread
+    board["vegas_line_home"] = 0.0
+    if market is not None:
         board = board.merge(market, on=["date","home_team","away_team"], how="left")
         board["vegas_line_home"] = pd.to_numeric(board["vegas_line_home"], errors="coerce").fillna(0.0).astype(float)
-        print("[BOARD] merged market spreads into vegas_line_home")
-    else:
-        print("[BOARD] no market file found; vegas_line_home set to 0.0 for all rows (deterministic fallback)")
 
-    cols_order = [
-        "date","week","away_team","home_team",
-        "p_home_model","vegas_line_home",
+    # Deterministic fields the validator expects
+    # p_home_market from vegas_line_home
+    board["p_home_market"] = board["vegas_line_home"].map(lambda x: prob_from_home_line(x, a, b))
+    # model_line_home from p_home_model
+    board["model_line_home"] = board["p_home_model"].map(lambda p: line_from_prob(p, a, b))
+    # confidence as abs diff of probabilities
+    board["confidence"] = (board["p_home_model"] - board["p_home_market"]).abs()
+
+    # game_id: prefer msf_game_id, else deterministic composite
+    if "msf_game_id" in board.columns:
+        board["game_id"] = board["msf_game_id"]
+    else:
+        board["game_id"] = None
+    mask = board["game_id"].isna() | (board["game_id"].astype(str) == "") | (board["game_id"].astype(str) == "nan")
+    board.loc[mask, "game_id"] = board.loc[mask].apply(
+        lambda r: f"{r['date']}-{str(r['away_team']).upper()}-{str(r['home_team']).upper()}", axis=1
+    )
+
+    cols = [
+        "date","week","away_team","home_team","game_id",
+        "vegas_line_home","model_line_home","p_home_market","p_home_model","confidence",
         "elo_exp_home","elo_diff_pre","elo_home_pre","elo_away_pre","msf_game_id"
     ]
-    cols = [c for c in cols_order if c in board.columns]
-    rest = [c for c in board.columns if c not in cols]
-    out = board[cols + rest].copy()
+    cols = [c for c in cols if c in board.columns]
+    board = board[cols].copy()
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(OUT, index=False)
-    print(f"[OK] wrote {OUT} rows={len(out)}")
-
-if __name__ == "__main__":
-    main()
+    board.to_csv(OUT, index=False)
+    print(f"[OK] wrote {OUT} rows={len(board)}")
