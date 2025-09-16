@@ -35,13 +35,22 @@ mkdir -p "$WORKTREES_DIR"
 GIT_SHA="$(git rev-parse HEAD)"
 git worktree add --detach "$WT_PATH" "$GIT_SHA" >/dev/null
 
-cleanup(){ git worktree remove --force "$WT_PATH" >/dev/null 2>&1 || true; }
+# We DO NOT auto-remove failing worktrees; preserve for forensics.
+cleanup_success=false
+cleanup(){
+  if $cleanup_success; then
+    git worktree remove --force "$WT_PATH" >/dev/null 2>&1 || true
+  else
+    echo "[INFO] Preserving failing worktree for inspection:"
+    echo "       $WT_PATH"
+    echo "       Logs (if any): $WT_PATH/_phase0_logs/"
+  fi
+}
 trap cleanup EXIT
 
-WT_LOG_DIR="$WT_PATH/_phase0_logs"
-mkdir -p "$WT_LOG_DIR"
+WT_LOG_DIR="$WT_PATH/_phase0_logs"; mkdir -p "$WT_LOG_DIR"
 
-# Carry MSF creds if present
+# Carry MSF_* if present; also export PHASE0 guard
 ENV_EXPORT=()
 for name in MSF_KEY MSF_PASS; do
   [[ -n "${!name-}" ]] && ENV_EXPORT+=( "$name=${!name}" )
@@ -56,7 +65,7 @@ run_once() {
   pushd "$WT_PATH" >/dev/null
 
   # Activate repo venv if present
-  if [[ -x "$REPO_ROOT/.venv/bin/python" ]]; then
+  if [[ -x "$REPO_ROOT/.venv/bin/activate" ]]; then
     # shellcheck disable=SC1091
     source "$REPO_ROOT/.venv/bin/activate"
   fi
@@ -64,7 +73,7 @@ run_once() {
   rm -rf out reports || true
   mkdir -p out reports out/results out/msf_details
 
-  export START="$START" END="$END" SEASON="$SEASON" ${ENV_EXPORT[@]+"${ENV_EXPORT[@]}"}
+  export START="$START" END="$END" SEASON="$SEASON" PHASE0=1 ${ENV_EXPORT[@]+"${ENV_EXPORT[@]}"}
 
   set -o pipefail
   {
@@ -87,29 +96,25 @@ run_once() {
     echo "[QA] finals rows=$rows (expected $EXPECTED_FINALS)"
     [[ "$rows" -eq "$EXPECTED_FINALS" ]] || { echo "[FATAL] Finals count mismatch ($rows != $EXPECTED_FINALS)"; exit 71; }
 
-    # Require canonical artifacts exist before checksum
+    # Require canonical artifacts before digest
     [[ -f out/model_board.csv ]] || { echo "[FATAL] Missing out/model_board.csv"; exit 72; }
     [[ -f reports/board_week.html ]] || { echo "[FATAL] Missing reports/board_week.html"; exit 73; }
     [[ -f reports/eval_ats.html  ]] || { echo "[FATAL] Missing reports/eval_ats.html";  exit 73; }
 
-    # Stage files for digest
+    # Stage files for digest (robust even if zero files)
     mkdir -p "$tmp/out" "$tmp/reports"
     rsync -aL out/ "$tmp/out/"
     rsync -aL reports/ "$tmp/reports/"
-
-    # Create stable file list; don't abort if empty → still produce manifest
     (
       cd "$tmp"
-      # list → checksums (allow 0 files without non-zero status)
       { find out -type f -print0; find reports -type f -print0; } \
         | sort -z \
         | { xargs -0 $SHACMD || true; } > checksums.txt
-      # always create a manifest digest (even if checksums.txt is empty)
       $SHACMD checksums.txt | awk '{print $1}' > manifest.sha256
       echo "[DIGEST] files=$(wc -l < checksums.txt | tr -d ' ') manifest=$(cat manifest.sha256)"
     )
 
-    # Guard: no symlinks in staged artifacts
+    # No symlinks
     if find "$tmp/out" "$tmp/reports" -type l | grep -q .; then
       echo "[FATAL] Symlinks detected in tmp artifacts"; exit 74
     fi
@@ -144,7 +149,7 @@ rsync -aL --delete "$p1/reports/" "$REPORTS_DIR/"
 mkdir -p "$OUT_DIR/_phase0_logs"
 cp -f "$WT_LOG_DIR/"* "$OUT_DIR/_phase0_logs/" 2>/dev/null || true
 
-# Manifest for the installed week
+# Manifest
 cat > "$OUT_DIR/run_manifest.json" <<JSON
 {
   "week": $WEEK,
@@ -158,3 +163,6 @@ cat > "$OUT_DIR/run_manifest.json" <<JSON
 JSON
 
 echo "[DONE] Week $WEEK ($WEEK_TAG) installed."
+
+# Only now do we allow cleanup
+cleanup_success=true
