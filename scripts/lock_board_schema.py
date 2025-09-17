@@ -18,7 +18,7 @@ need = [
 with open(SRC, newline='', encoding='utf-8') as f, open(TMP,'w',newline='',encoding='utf-8') as g:
     r=csv.DictReader(f); w=csv.DictWriter(g, fieldnames=need); w.writeheader()
     for x in r:
-        gid=(x.get("game_id") or x.get("msf_game_id") or "").strip()
+        gid=(x.get("msf_game_id") or x.get("game_id") or "").strip()
         if not gid: continue
         # prefer already-computed fields; enforce presence
         p_model = (x.get("p_home_model") or x.get("p_home") or "").strip()

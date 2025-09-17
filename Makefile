@@ -39,6 +39,7 @@ week: preflight elo
 	python3 scripts/render_board.py
 	@test -f reports/board_week.html || (echo "[FATAL] render_board.py did not produce reports/board_week.html"; exit 1)
 	python3 scripts/validate_and_manifest.py
+	python3 scripts/check_board_finals_ids.py
 	# downstream artifacts required by acceptance
 	python3 scripts/emit_week_predictions_from_board.py
 	python3 scripts/verify_alignment.py
