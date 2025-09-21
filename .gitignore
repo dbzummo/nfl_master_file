@@ -1,37 +1,43 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.venv/
-venv/
-.env
-.env.*
-OddAPI.env
-
-# macOS
+# OS
 .DS_Store
 
-# Artifacts / outputs
-out/
-out_*.csv
-manifest.json
-cache/
-
-# Backups / patches / zips
-*.bak.*
-patch_*.py
-*.zip
-
-# Notebooks
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
 .ipynb_checkpoints/
 
-# allow these outputs
-!out/msf_details/msf_week.csv
-!out/scheme_features_week.csv
-# allow these specific outputs
-!out/
-!out/msf_details/
-!out/msf_details/msf_week.csv
-!out/scheme_features_week.csv
-/.phase0_worktrees/
+# Environments & IDE
+.venv/
+.env
+.secrets/   # legacy
+_secrets/
+
+# Archives & saves
+_snapshots/
+saves/
+_archive/
+_old_reports/
+
+# Build/outputs (keep only what you consciously commit)
+out/*.log
+out/*.png
+out/*.pdf
+out/*.parquet
+out/*.feather
+out/large/
+# Allow small CSV/HTML if you want to track them:
+!out/*.csv
+!out/*.html
+
+# Backups
+*.bak
+*.bak.*
+*.sio_patch
+*.ast
+
+# Misc
+*.sqlite
+*.db
