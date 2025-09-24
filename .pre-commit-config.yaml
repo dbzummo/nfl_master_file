@@ -7,7 +7,19 @@ repos:
     - id: check-merge-conflict
     - id: check-added-large-files
       args: ['--maxkb=500']  # block >500KB accidentally added
+
 - repo: https://github.com/zricethezav/gitleaks
   rev: v8.18.2
   hooks:
     - id: gitleaks
+
+# ----------------------------
+# #2: local symlink check hook
+# ----------------------------
+- repo: local
+  hooks:
+    - id: symlink-check
+      name: symlink-check
+      entry: bash scripts/check_symlinks.sh
+      language: system
+      pass_filenames: false
