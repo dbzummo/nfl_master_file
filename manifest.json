@@ -1,0 +1,236 @@
+{
+  "run_meta": {
+    "runner": "Daniels-MacBook-Pro.local",
+    "timestamp_utc": "2025-09-02T07:16:21.966764+00:00",
+    "python": "3.11.9",
+    "host": "Daniels-MacBook-Pro.local",
+    "config_used": "master_model_file_v5.0.json"
+  },
+  "inputs": {
+    "ratings_csv": "kalman_state_preseason.csv",
+    "stadium_hfa_csv": "stadium_hfa_advanced.csv",
+    "depth_charts_csv": "team_depth_charts_with_values.csv",
+    "odds_provider": "TheOddsAPI",
+    "injury_provider": "SportsDataIO (or configured provider)"
+  },
+  "outputs": {
+    "predictions_csv": "out_week1_predictions.csv",
+    "gamecards_csv": "out_week1_gamecards.csv"
+  },
+  "audits": {
+    "roster_audit": {
+      "conflicts": {
+        "ARI": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "ATL": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "BAL": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "BUF": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "CAR": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "CHI": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "CIN": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "CLE": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "DAL": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "DEN": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "DET": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "GB": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "HOU": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "IND": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "JAX": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "KC": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "LAC": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "LAR": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "LV": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "MIA": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "MIN": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "NE": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "NO": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "NYG": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "NYJ": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "PHI": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "PIT": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "SEA": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "SF": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "TB": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "TEN": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ],
+        "WSH": [
+          {
+            "status": "BLOCK",
+            "details": "Both providers returned empty roster."
+          }
+        ]
+      },
+      "meta": {
+        "provider_primary": "sportsdataio",
+        "provider_secondary": "nflverse"
+      }
+    }
+  },
+  "extras": {
+    "injury_source": "fallback",
+    "injuries_live_count": 0,
+    "injuries_fallback_count": 0,
+    "sigma_policy": "constant",
+    "config_hash": "1202d571a63719e8e61d79c7a6057891d2dd6a5ba06c010d61bd00f59c3ec5fc",
+    "metrics": {
+      "n_games": 16,
+      "mean_abs_prob_diff": 0.1438721963819235,
+      "median_abs_prob_diff": 0.14205185599181955,
+      "mean_prob_diff": -0.05781498545345208,
+      "q90_abs_prob_diff": 0.32239295605422275
+    }
+  }
+}

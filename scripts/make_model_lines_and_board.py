@@ -1,229 +1,97 @@
 #!/usr/bin/env python3
-"""
-Deterministic board builder.
-
-Inputs (required):
-  - out/week_with_elo.csv   (date, week, home_team, away_team, elo_exp_home, elo_diff_pre, elo_home_pre, elo_away_pre, msf_game_id)
-
-Inputs (optional, handled safely):
-  - out/week_predictions.csv  (can contain p_home_model or p_home/_cal_*; if absent, derive from elo_exp_home)
-  - out/odds/week_odds.csv    (vegas_line_home; if absent, default 0.0)
-  - out/injuries/injury_impacts.csv (inj_*, matched by team)
-
-Output (required):
-  - out/model_board.csv
-
-Fail-closed: if required inputs are missing or merge produces zero rows, exit with clear [FATAL].
-"""
-
-import sys, os, math, json
-from pathlib import Path
 import pandas as pd
+from pathlib import Path
 
-REQ_ELO  = Path("out/week_with_elo.csv")
-OPT_PREDS= Path("out/week_predictions.csv")
-OPT_ODDS = Path("out/odds/week_odds.csv")
-OPT_INJ  = Path("out/injuries/injury_impacts.csv")
-OUT_CSV  = Path("out/model_board.csv")
+OUT_DIR = Path("out")
+REPORTS_DIR = Path("reports")
+BOARD_CSV = OUT_DIR / "model_board.csv"
+BOARD_HTML = REPORTS_DIR / "board_week.html"
 
-def fatal(msg: str, code: int = 2):
-    print(f"[FATAL] {msg}", file=sys.stderr); sys.exit(code)
-
-def canon_team(t: str) -> str:
-    if t is None: return ""
-    t = str(t).upper().strip()
-    # Allow both older and current aliases; keep simple map
-    return {"WSH":"WAS"}.get(t, t)
-
-def safe_read_csv(path: Path, need: set|None=None):
-    if not path.exists(): return None
+def read_csv(path: Path) -> pd.DataFrame:
     try:
-        df = pd.read_csv(path)
-        if need and not need.issubset(df.columns):
-            missing = sorted(need - set(df.columns))
-            print(f"[WARN] {path} missing {missing}; continuing with available columns", file=sys.stderr)
-        return df
-    except Exception as e:
-        fatal(f"Failed to read {path}: {e}")
+        return pd.read_csv(path)
+    except FileNotFoundError:
+        raise SystemExit(f"[FATAL] Missing required file: {path}")
 
-def derive_p_from_elo(elo_exp_home):
-    # elo_exp_home is already a 0..1 “expected” home prob from Elo diff
-    try:
-        x = float(elo_exp_home)
-        if not (0.0 <= x <= 1.0): return 0.5
-        return x
-    except Exception:
-        return 0.5
+def build_pair_key(df, home_col="home_abbr", away_col="away_abbr"):
+    hc = home_col if home_col in df.columns else None
+    ac = away_col if away_col in df.columns else None
+    if hc and ac:
+        df[home_col] = df[home_col].astype(str).str.strip()
+        df[away_col] = df[away_col].astype(str).str.strip()
+        return df.apply(lambda r: "|".join(sorted([r[home_col], r[away_col]])), axis=1)
+    return pd.Series([None]*len(df))
+
+def canonical_market_prob(df: pd.DataFrame) -> pd.Series:
+    """Return best-available market probability, regardless of suffix/raw."""
+    for c in [
+        "market_p_home",
+        "market_p_home_y",
+        "market_p_home_x",
+        "market_p_home_raw_y",
+        "market_p_home_raw_x",
+        "market_p_home_raw",
+    ]:
+        if c in df.columns:
+            s = pd.to_numeric(df[c], errors="coerce")
+            if s.notna().any():
+                return s
+    return pd.Series([pd.NA]*len(df))
 
 def main():
-    # Required ELO join
-    elo = safe_read_csv(REQ_ELO, need={"date","home_team","away_team","elo_exp_home"})
-    if elo is None:
-        fatal(f"Missing required input: {REQ_ELO}")
-    # Canonicalize minimal columns and types
-    for c in ("home_team","away_team"):
-        elo[c] = elo[c].map(canon_team)
-    elo["date"] = pd.to_datetime(elo["date"], errors="coerce").dt.date
-    if elo["date"].isna().any():
-        fatal("week_with_elo.csv has invalid dates")
-    if "week" in elo.columns:
-        elo["week"] = pd.to_numeric(elo["week"], errors="coerce").astype("Int64")
+    market = read_csv(OUT_DIR / "week_with_market.csv")
+    preds  = read_csv(OUT_DIR / "week_predictions.csv")
 
-    # Optional predictions
-    preds = safe_read_csv(OPT_PREDS)
-    if preds is not None and not preds.empty:
-        # Normalize keys we might match on
-        for c in ("home_team","away_team"):
-            if c in preds.columns:
-                preds[c] = preds[c].map(canon_team)
-        if "date" in preds.columns:
-            preds["date"] = pd.to_datetime(preds["date"], errors="coerce").dt.date
+    # Ensure both have a pair_key
+    if "pair_key" not in market.columns or market["pair_key"].isna().all():
+        market["pair_key"] = build_pair_key(market)
 
-        # Choose a p_home_model column (priority order)
-        pcols = [c for c in preds.columns if c.lower() in (
-            "p_home_model","p_home","p_home_cal_platt","p_home_cal_iso"
-        )]
-        pcol = pcols[0] if pcols else None
+    if "pair_key" not in preds.columns or preds["pair_key"].isna().all():
+        preds["pair_key"] = build_pair_key(preds)
 
-        # Try to merge on strongest keys; fall back progressively
-        merged = None
-        for keys in (["date","home_team","away_team"],
-                     ["home_team","away_team"],
-                     ["date","home_team"],
-                     ["date","away_team"]):
-            if all(k in preds.columns for k in keys):
-                merged = pd.merge(
-                    elo, preds[[*keys] + ([pcol] if pcol else [])],
-                    on=keys, how="left"
-                )
-                if len(merged) == len(elo):  # no accidental row explosion
-                    elo = merged
-                    break
+    # Take ONLY the columns we need from each side
+    market_keep = [c for c in [
+        "msf_game_id","game_start","home_abbr","away_abbr",
+        "venue","status","pair_key",
+        "book_count_mkt","ml_home_mkt","ml_away_mkt",
+        "market_p_home","market_p_home_raw","commence_time_mkt"
+    ] if c in market.columns]
+    market_view = market[market_keep].copy()
 
-        if pcol:
-            elo["p_home_model"] = pd.to_numeric(elo[pcol], errors="coerce")
-        # else we’ll derive below
-        print(f"[BOARD] predictions merged on available keys; pcol={pcol or 'derived-from-elo'}")
-    else:
-        print("[BOARD] no week_predictions.csv found; will derive p_home_model from elo_exp_home")
+    # Minimal preds to avoid column collisions
+    preds_view = preds[[c for c in ["pair_key","p_home"] if c in preds.columns]].copy()
+    if "p_home" not in preds_view.columns:
+        preds_view["p_home"] = pd.NA
 
-    # Optional odds / vegas line
-    odds = safe_read_csv(OPT_ODDS)
-    if odds is not None and not odds.empty:
-        for c in ("home_team","away_team"):
-            if c in odds.columns:
-                odds[c] = odds[c].map(canon_team)
-        if "date" in odds.columns:
-            odds["date"] = pd.to_datetime(odds["date"], errors="coerce").dt.date
+    # Merge on pair_key only -> no overlapping columns
+    board = pd.merge(market_view, preds_view, on="pair_key", how="left")
 
-        # Normalize a Vegas line column name
-        vcol = None
-        for candidate in ("vegas_line_home","line_home","home_line","spread_home"):
-            if candidate in odds.columns:
-                vcol = candidate; break
-        if vcol is None:
-            print("[WARN] odds file present but no recognizable line column; defaulting 0.0", file=sys.stderr)
+    # Canonicalize market prob after merge (handles suffix/raw)
+    board["market_p_home"] = canonical_market_prob(board)
 
-        # Merge odds (best-effort on strongest keys)
-        merged = None
-        for keys in (["date","home_team","away_team"], ["home_team","away_team"], ["date","home_team"]):
-            if all(k in odds.columns for k in keys):
-                cols = keys + ([vcol] if vcol else [])
-                merged = pd.merge(elo, odds[cols], on=keys, how="left", suffixes=("",""))
-                if len(merged) == len(elo):
-                    elo = merged; break
+    # Compute edge where both sides exist
+    board["edge"] = (
+        pd.to_numeric(board.get("p_home"), errors="coerce")
+        - pd.to_numeric(board.get("market_p_home"), errors="coerce")
+    )
 
-        if vcol and vcol != "vegas_line_home":
-            elo.rename(columns={vcol:"vegas_line_home"}, inplace=True)
+    # Final column order (only those that exist)
+    final_cols = [c for c in [
+        "msf_game_id","game_start","home_abbr","away_abbr","venue","status",
+        "book_count_mkt","ml_home_mkt","ml_away_mkt",
+        "market_p_home","p_home","edge",
+        "commence_time_mkt","pair_key"
+    ] if c in board.columns]
+    board = board[final_cols].copy()
 
-    # Injuries (optional): expect team-level impacts, join by team and/or by home/away
-    inj = safe_read_csv(OPT_INJ)
-    if inj is not None and not inj.empty:
-        if "team" in inj.columns:
-            inj["team"] = inj["team"].map(canon_team)
-            # home impacts
-            elo = pd.merge(
-                elo, inj.add_prefix("home_"), left_on="home_team", right_on="home_team", how="left"
-            )
-            # away impacts
-            elo = pd.merge(
-                elo, inj.add_prefix("away_"), left_on="away_team", right_on="away_team", how="left"
-            )
-            # reduce to expected columns if present
-            for want_src, want_dst in (("home_points","inj_home_pts"), ("away_points","inj_away_pts")):
-                col = None
-                for cand in (f"home_{want_src}", f"away_{want_src}"):
-                    if cand in elo.columns:
-                        col = cand; break
-                if want_dst not in elo.columns:
-                    elo[want_dst] = pd.to_numeric(elo[col], errors="coerce") if col else 0.0
-        print("[BOARD] injury impacts merged (best-effort)")
-    else:
-        # ensure presence
-        elo["inj_home_pts"] = elo.get("inj_home_pts", 0.0)
-        elo["inj_away_pts"] = elo.get("inj_away_pts", 0.0)
+    # Output
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    board.to_csv(BOARD_CSV, index=False)
+    print(f"[OK] Wrote {BOARD_CSV} (rows={len(board)})")
 
-    # Guarantee core columns
-    need_core = ["date","home_team","away_team","elo_exp_home"]
-    for c in need_core:
-        if c not in elo.columns:
-            fatal(f"week_with_elo.csv missing required column after joins: {c}")
-
-    # p_home_model: use column if present; else derive from elo
-    if "p_home_model" not in elo.columns or elo["p_home_model"].isna().all():
-        elo["p_home_model"] = elo["elo_exp_home"].apply(derive_p_from_elo)
-
-    # vegas_line_home default to 0.0 if absent
-    if "vegas_line_home" not in elo.columns:
-        elo["vegas_line_home"] = 0.0
-    elo["vegas_line_home"] = pd.to_numeric(elo["vegas_line_home"], errors="coerce").fillna(0.0)
-
-    # confidence: if market present compute |p_model - p_market|, else 0.0
-    def p_from_line(spread):
-        try:
-            spread = float(spread)
-        except Exception:
-            return None
-        # Use the same transform constants used elsewhere
-        A, B = -0.1794, -0.1655
-        return 1.0/(1.0 + math.exp(-(A + B*spread)))
-
-    p_market = elo["vegas_line_home"].apply(p_from_line)
-    elo["confidence"] = (elo["p_home_model"] - p_market).abs().fillna(0.0)
-
-    # Select & order minimal schema plus helpful extras
-    out_cols = [
-        "date","week","away_team","home_team",
-        "p_home_model","vegas_line_home",
-        "elo_exp_home","elo_diff_pre","elo_home_pre","elo_away_pre",
-        "inj_home_pts","inj_away_pts","msf_game_id"
-    ]
-    cols_present = [c for c in out_cols if c in elo.columns]
-    rest = [c for c in elo.columns if c not in cols_present]
-    out = elo[cols_present + rest].copy()
-
-    # --- Phase 0 schema guarantees for locker/validator ---
-    from scripts._board_utils_phase0 import read_cal, line_from_prob, prob_from_home_line, synth_game_id
-    a,b = read_cal()
-    # game_id (deterministic synthetic if absent)
-    if "game_id" not in out.columns:
-        out["game_id"] = out.apply(synth_game_id, axis=1)
-    # model_line_home derived from p_home_model via current calibration
-    if "model_line_home" not in out.columns:
-        out["model_line_home"] = out["p_home_model"].apply(lambda p: round(line_from_prob(p, a, b), 2))
-    # p_home_market deterministically from vegas_line_home (even if vegas_line_home==0 fallback)
-    if "p_home_market" not in out.columns:
-        out["p_home_market"] = out["vegas_line_home"].apply(lambda x: prob_from_home_line(x, a, b))
-    # confidence present already; ensure numeric
-    out["confidence"] = pd.to_numeric(out.get("confidence", 0.0), errors="coerce").fillna(0.0)
-
-    # Final sanity
-    if out.empty:
-        fatal("board is empty after merges — cannot proceed")
-    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
-    out.sort_values(["date","home_team","away_team"], inplace=True)
-    out.to_csv(OUT_CSV, index=False)
-    print(f"[OK] wrote {OUT_CSV} rows={len(out)}")
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    BOARD_HTML.write_text(board.to_html(index=False, border=0), encoding="utf-8")
+    print(f"[OK] Rendered HTML board -> {BOARD_HTML}")
 
 if __name__ == "__main__":
     main()

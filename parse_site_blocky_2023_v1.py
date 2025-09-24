@@ -17,7 +17,7 @@ total_re  = re.compile(r"O (\d+\.?\d*)|U (\d+\.?\d*)")
 lines = src.read_text().splitlines()
 for line in lines:
     line = line.strip()
-    if not line: 
+    if not line:
         continue
 
     # Match date lines like "Sep 7, 2023"

@@ -3,7 +3,7 @@
 """
 Fetch MSF Weekly or Daily games (v2.1) using correct v2 auth:
   username = <YOUR GUID API KEY>
-  password = "MYSPORTSFEEDS"     (literal per MSF v2 spec)
+# MSF_PASSWORD_PLACEHOLDER (demo only, not a secret)
 
 We **only** call CORE endpoints:
   - Weekly: https://api.mysportsfeeds.com/v2.1/pull/nfl/{season}/week/{week}/games.json

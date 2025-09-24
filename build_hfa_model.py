@@ -6,13 +6,13 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     """Calculate the great-circle distance between two points on the earth."""
     R = 3958.8 # Radius of earth in miles
     lat1, lon1, lat2, lon2 = map(np.radians, [lat1, lon1, lat2, lon2])
-    
+
     dlon = lon2 - lon1
     dlat = lat2 - lat1
-    
+
     a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
     c = 2 * np.arcsin(np.sqrt(a))
-    
+
     distance = R * c
     return distance
 
@@ -79,15 +79,15 @@ for team in all_teams:
     team_data = games_df[games_df['home_team'] == team]
     if not team_data.empty:
         team_feature_row = pd.Series(0, index=X.columns)
-        
+
         team_feature_row['is_dome'] = team_data['is_dome'].iloc[0]
         team_feature_row['is_turf'] = team_data['is_turf'].iloc[0]
         team_feature_row['altitude_ft'] = team_data['altitude_ft'].iloc[0]
         team_feature_row['travel_distance'] = baseline_travel
-        
+
         if f'team_{team}' in team_feature_row.index:
             team_feature_row[f'team_{team}'] = 1
-            
+
         predicted_hfa = model.predict([team_feature_row])[0]
         hfa_results.append({'team_code': team, 'advanced_hfa': predicted_hfa})
 

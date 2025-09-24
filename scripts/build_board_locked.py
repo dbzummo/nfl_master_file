@@ -54,16 +54,16 @@ with PR.open(newline="", encoding="utf-8") as f:
 def pick_prob(row: dict) -> float | None:
     for k in ["p_home","p_home_cal_platt","p_home_cal_iso","home_win_prob","cal_platt","elo_exp_home"]:
         if k in row and row[k] not in (None,"","nan"):
-            try: 
+            try:
                 return float(row[k])
-            except: 
+            except:
                 pass
     return None
 
 pred_by_id = {}
 for row in pr:
     gid = (row.get("msf_game_id") or row.get("game_id") or "").strip()
-    if not gid: 
+    if not gid:
         continue
     p = pick_prob(row)
     if p is not None:
@@ -74,7 +74,7 @@ rows = []
 missing_pred = 0
 for row in wk:
     gid = row["msf_game_id"].strip()
-    if not gid: 
+    if not gid:
         continue
 
     vegas_line = float(row["vegas_line_home"]) if row["vegas_line_home"] not in ("","nan") else 0.0

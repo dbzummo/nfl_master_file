@@ -41,3 +41,25 @@ out/large/
 # Misc
 *.sqlite
 *.db
+
+# artifacts
+artifacts/
+
+# env and keys
+.env*
+OddAPI.env
+
+# local worktrees
+.phase0_worktrees/
+
+# debug bundles
+debug_bundle_*/
+# local worktrees
+.phase0_worktrees/
+
+# virtualenv
+.venv/
+
+# env and keys
+.env*
+OddAPI.env

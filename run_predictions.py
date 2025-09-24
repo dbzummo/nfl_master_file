@@ -69,7 +69,7 @@ def _pick_teams_from_odds(odds_df: pd.DataFrame) -> list:
     return sorted(t)
 
 def run_weekly_predictions() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    
+
         print("STEP 0: Preparing environment & config...")
         cfg = _load_json(CONFIG_PATH)
         require_env(os.environ, REQUIRED_ENV)

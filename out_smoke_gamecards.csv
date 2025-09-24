@@ -1,0 +1,3 @@
+game_id,home_team,away_team,kickoff_utc,neutral_site,rating_home,rating_away,hfa_home,inj_adj_home,inj_adj_away,vegas_line,vegas_total,modeled_spread_home,modeled_total,win_prob_home,cover_prob_home,ou_prob_over,notes
+PHI@DAL_20250907T1700Z,DAL,PHI,2025-09-07T17:00:00Z,False,4.2,3.8,1.2,-0.30544991300829083,-0.9678235357575469,-2.5,47.5,2.2623736227492564,46.314257582635044,0.5089,0.4336,0.4484,"Blend 60% model / 40% market; sigma_margin=13.5, sigma_total=9.5"
+BUF@KC_20250907T2025Z,KC,BUF,2025-09-07T20:25:00Z,False,6.1,5.5,1.0,-0.16847300012398175,-0.7314290452192024,-3.0,51.0,2.1629560450952203,48.77022263729428,0.5035,0.4153,0.4077,"Blend 60% model / 40% market; sigma_margin=13.5, sigma_total=9.5"

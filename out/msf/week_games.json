@@ -1,0 +1,3117 @@
+{
+  "lastUpdatedOn": "2025-09-23T06:14:57.892Z",
+  "games": [
+    {
+      "schedule": {
+        "id": 148773,
+        "week": 3,
+        "startTime": "2025-09-19T00:15:00.000Z",
+        "endedTime": "2025-09-19T04:10:00.000Z",
+        "awayTeam": {
+          "id": 49,
+          "abbreviation": "MIA"
+        },
+        "homeTeam": {
+          "id": 48,
+          "abbreviation": "BUF"
+        },
+        "venue": {
+          "id": 46,
+          "name": "Highmark Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 70641,
+        "officials": [
+          {
+            "id": 19965,
+            "title": "Line Judge",
+            "firstName": "Greg",
+            "lastName": "Bradley"
+          },
+          {
+            "id": 19279,
+            "title": "Back Judge",
+            "firstName": "Greg",
+            "lastName": "Meyer"
+          },
+          {
+            "id": 22158,
+            "title": "Referee",
+            "firstName": "Alan",
+            "lastName": "Eck"
+          },
+          {
+            "id": 20375,
+            "title": "Field Judge",
+            "firstName": "John",
+            "lastName": "Jenkins"
+          },
+          {
+            "id": 20091,
+            "title": "Side Judge",
+            "firstName": "Dale",
+            "lastName": "Shaw"
+          },
+          {
+            "id": 20370,
+            "title": "Umpire",
+            "firstName": "Paul",
+            "lastName": "King"
+          },
+          {
+            "id": 22390,
+            "title": "Down Judge",
+            "firstName": "David",
+            "lastName": "Oliver"
+          }
+        ],
+        "broadcasters": [
+          "Prime Video",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "RDS",
+          "TSN",
+          "Sky Sports",
+          "NFL Game Pass on DAZN",
+          "Fox Sports",
+          "DAZN Germany (OTT)",
+          "ESPN",
+          "7mate",
+          "beIN 1",
+          "SPORTV2"
+        ],
+        "weather": {
+          "type": "CLOUDY",
+          "description": "broken clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 19,
+              "kilometersPerHour": 31
+            },
+            "direction": {
+              "degrees": 241,
+              "label": "WSW"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 72,
+            "celsius": 22
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 78
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 21,
+        "homeScoreTotal": 31,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 10
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148774,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T20:50:00.000Z",
+        "awayTeam": {
+          "id": 68,
+          "abbreviation": "ATL"
+        },
+        "homeTeam": {
+          "id": 69,
+          "abbreviation": "CAR"
+        },
+        "venue": {
+          "id": 47,
+          "name": "Bank of America Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 71129,
+        "officials": [],
+        "broadcasters": [
+          "FOX",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN"
+        ],
+        "weather": {
+          "type": "LIGHT_RAIN",
+          "description": "light rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 9,
+              "kilometersPerHour": 14
+            },
+            "direction": {
+              "degrees": 58,
+              "label": "ENE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 81,
+            "celsius": 27
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 0,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 40
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 0,
+        "homeScoreTotal": 30,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 0,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 10
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 0,
+            "homeScore": 10
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148775,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:03:00.000Z",
+        "awayTeam": {
+          "id": 62,
+          "abbreviation": "GB"
+        },
+        "homeTeam": {
+          "id": 58,
+          "abbreviation": "CLE"
+        },
+        "venue": {
+          "id": 50,
+          "name": "Huntington Bank Field"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 65470,
+        "officials": [
+          {
+            "id": 535358,
+            "title": "Line Judge",
+            "firstName": "Quentin",
+            "lastName": "Givens"
+          },
+          {
+            "id": 477346,
+            "title": "Back Judge",
+            "firstName": "Martin",
+            "lastName": "Hankins"
+          },
+          {
+            "id": 21751,
+            "title": "Field Judge",
+            "firstName": "Nathan",
+            "lastName": "Jones"
+          },
+          {
+            "id": 19723,
+            "title": "Referee",
+            "firstName": "Carl",
+            "lastName": "Cheffers"
+          },
+          {
+            "id": 500500,
+            "title": "Umpire",
+            "firstName": "Derek",
+            "lastName": "Anderson"
+          },
+          {
+            "id": 19280,
+            "title": "Side Judge",
+            "firstName": "Eugene",
+            "lastName": "Hall"
+          },
+          {
+            "id": 24078,
+            "title": "Down Judge",
+            "firstName": "Daniel",
+            "lastName": "Gallagher"
+          }
+        ],
+        "broadcasters": [
+          "FOX",
+          "DAZN Canada (OTT)",
+          "TSN",
+          "NFL Game Pass on DAZN",
+          "ESPN2"
+        ],
+        "weather": null
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 10,
+        "homeScoreTotal": 13,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 7,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 0,
+            "homeScore": 13
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148776,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:08:00.000Z",
+        "awayTeam": {
+          "id": 64,
+          "abbreviation": "HOU"
+        },
+        "homeTeam": {
+          "id": 66,
+          "abbreviation": "JAX"
+        },
+        "venue": {
+          "id": 57,
+          "name": "TIAA Bank Field"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 58161,
+        "officials": [
+          {
+            "id": 20376,
+            "title": "Line Judge",
+            "firstName": "Rusty",
+            "lastName": "Baynes"
+          },
+          {
+            "id": 19918,
+            "title": "Back Judge",
+            "firstName": "Scott",
+            "lastName": "Helverson"
+          },
+          {
+            "id": 19461,
+            "title": "Referee",
+            "firstName": "Alex",
+            "lastName": "Kemp"
+          },
+          {
+            "id": 480038,
+            "title": "Field Judge",
+            "firstName": "Sean",
+            "lastName": "Petty"
+          },
+          {
+            "id": 19318,
+            "title": "Umpire",
+            "firstName": "Roy",
+            "lastName": "Ellison"
+          },
+          {
+            "id": 410754,
+            "title": "Side Judge",
+            "firstName": "Lo",
+            "lastName": "van Pham"
+          },
+          {
+            "id": 21477,
+            "title": "Down Judge",
+            "firstName": "Mike",
+            "lastName": "Carr"
+          }
+        ],
+        "broadcasters": [
+          "CBS",
+          "NFL Game Pass on DAZN"
+        ],
+        "weather": null
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 10,
+        "homeScoreTotal": 17,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 7
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148777,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:10:00.000Z",
+        "awayTeam": {
+          "id": 57,
+          "abbreviation": "CIN"
+        },
+        "homeTeam": {
+          "id": 63,
+          "abbreviation": "MIN"
+        },
+        "venue": {
+          "id": 141,
+          "name": "US Bank Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 66792,
+        "officials": [
+          {
+            "id": 534035,
+            "title": "Line Judge",
+            "firstName": "Brian",
+            "lastName": "Bolinger"
+          },
+          {
+            "id": 19880,
+            "title": "Back Judge",
+            "firstName": "Terry",
+            "lastName": "Brown"
+          },
+          {
+            "id": 21425,
+            "title": "Field Judge",
+            "firstName": "Ryan",
+            "lastName": "Dickson"
+          },
+          {
+            "id": 19230,
+            "title": "Referee",
+            "firstName": "Ronald",
+            "lastName": "Torbert"
+          },
+          {
+            "id": 19919,
+            "title": "Side Judge",
+            "firstName": "Keith",
+            "lastName": "Washington"
+          },
+          {
+            "id": 19233,
+            "title": "Umpire",
+            "firstName": "Barry",
+            "lastName": "Anderson"
+          },
+          {
+            "id": 23828,
+            "title": "Down Judge",
+            "firstName": "Frank",
+            "lastName": "LeBlanc"
+          }
+        ],
+        "broadcasters": [
+          "CBS",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN",
+          "DAZN Germany (OTT)"
+        ],
+        "weather": {
+          "type": "RAIN",
+          "description": "moderate rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 9,
+              "kilometersPerHour": 14
+            },
+            "direction": {
+              "degrees": 158,
+              "label": "ESE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 77,
+            "celsius": 25
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 16,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 67
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 10,
+        "homeScoreTotal": 48,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 14
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 20
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 14
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 0
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148778,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T20:52:00.000Z",
+        "awayTeam": {
+          "id": 59,
+          "abbreviation": "PIT"
+        },
+        "homeTeam": {
+          "id": 50,
+          "abbreviation": "NE"
+        },
+        "venue": {
+          "id": 61,
+          "name": "Gillette Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 64628,
+        "officials": [],
+        "broadcasters": [
+          "CBS",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "Sky Sports",
+          "NFL Game Pass on DAZN",
+          "Fox Sports",
+          "RTL+",
+          "7mate",
+          "ESPN 2 & Disney+"
+        ],
+        "weather": {
+          "type": "CLOUDY",
+          "description": "broken clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 8,
+              "kilometersPerHour": 13
+            },
+            "direction": {
+              "degrees": 159,
+              "label": "S"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 62,
+            "celsius": 17
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 40
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 21,
+        "homeScoreTotal": 14,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 7,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 7
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148779,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:04:00.000Z",
+        "awayTeam": {
+          "id": 77,
+          "abbreviation": "LA"
+        },
+        "homeTeam": {
+          "id": 54,
+          "abbreviation": "PHI"
+        },
+        "venue": {
+          "id": 65,
+          "name": "Lincoln Financial Field"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 69879,
+        "officials": [],
+        "broadcasters": [
+          "FOX",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "RDS",
+          "TSN",
+          "Sky Sports",
+          "Channel 5",
+          "NFL Game Pass on DAZN",
+          "Fox Sports 2",
+          "RTL",
+          "ESPN",
+          "M6+",
+          "getv"
+        ],
+        "weather": {
+          "type": "CLOUDY",
+          "description": "broken clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 8,
+              "kilometersPerHour": 13
+            },
+            "direction": {
+              "degrees": 144,
+              "label": "ESE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 69,
+            "celsius": 21
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 42
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 26,
+        "homeScoreTotal": 33,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 10,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 9,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 7,
+            "homeScore": 14
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 0,
+            "homeScore": 12
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148780,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:18:00.000Z",
+        "awayTeam": {
+          "id": 51,
+          "abbreviation": "NYJ"
+        },
+        "homeTeam": {
+          "id": 71,
+          "abbreviation": "TB"
+        },
+        "venue": {
+          "id": 71,
+          "name": "Raymond James Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 62872,
+        "officials": [
+          {
+            "id": 19093,
+            "title": "Line Judge",
+            "firstName": "Julian",
+            "lastName": "Mapp"
+          },
+          {
+            "id": 19967,
+            "title": "Back Judge",
+            "firstName": "Gregory",
+            "lastName": "Steed"
+          },
+          {
+            "id": 19920,
+            "title": "Referee",
+            "firstName": "Adrian",
+            "lastName": "Hill"
+          },
+          {
+            "id": 410708,
+            "title": "Field Judge",
+            "firstName": "Trawick",
+            "lastName": "Boger"
+          },
+          {
+            "id": 23829,
+            "title": "Side Judge",
+            "firstName": "Clay",
+            "lastName": "Reynard"
+          },
+          {
+            "id": 19318,
+            "title": "Umpire",
+            "firstName": "Roy",
+            "lastName": "Ellison"
+          },
+          {
+            "id": 19088,
+            "title": "Down Judge",
+            "firstName": "Derick",
+            "lastName": "Bowers"
+          }
+        ],
+        "broadcasters": [
+          "FOX",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN"
+        ],
+        "weather": {
+          "type": "LIGHT_RAIN",
+          "description": "light rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 11,
+              "kilometersPerHour": 18
+            },
+            "direction": {
+              "degrees": 36,
+              "label": "NE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 88,
+            "celsius": 31
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 4,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 57
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 27,
+        "homeScoreTotal": 29,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 3,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 17
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 21,
+            "homeScore": 6
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148781,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:00:00.000Z",
+        "awayTeam": {
+          "id": 65,
+          "abbreviation": "IND"
+        },
+        "homeTeam": {
+          "id": 67,
+          "abbreviation": "TEN"
+        },
+        "venue": {
+          "id": 72,
+          "name": "Nissan Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 56361,
+        "officials": [
+          {
+            "id": 22389,
+            "title": "Line Judge",
+            "firstName": "Mark",
+            "lastName": "Stewart"
+          },
+          {
+            "id": 21424,
+            "title": "Back Judge",
+            "firstName": "Anthony",
+            "lastName": "Josselyn"
+          },
+          {
+            "id": 19134,
+            "title": "Referee",
+            "firstName": "Scott",
+            "lastName": "Novak"
+          },
+          {
+            "id": 19880,
+            "title": "Field Judge",
+            "firstName": "Terry",
+            "lastName": "Brown"
+          },
+          {
+            "id": 534062,
+            "title": "Umpire",
+            "firstName": "Brandon",
+            "lastName": "Cruse"
+          },
+          {
+            "id": 477660,
+            "title": "Umpire",
+            "firstName": "Brian",
+            "lastName": "Sakowski"
+          },
+          {
+            "id": 21532,
+            "title": "Side Judge",
+            "firstName": "Don",
+            "lastName": "Willard"
+          }
+        ],
+        "broadcasters": [
+          "CBS",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN"
+        ],
+        "weather": {
+          "type": "LIGHT_RAIN",
+          "description": "light rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 8,
+              "kilometersPerHour": 13
+            },
+            "direction": {
+              "degrees": 155,
+              "label": "ESE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 78,
+            "celsius": 26
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 2,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 76
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 41,
+        "homeScoreTotal": 20,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 17,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 14,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 7
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148782,
+        "week": 3,
+        "startTime": "2025-09-21T17:00:00.000Z",
+        "endedTime": "2025-09-21T21:07:00.000Z",
+        "awayTeam": {
+          "id": 74,
+          "abbreviation": "LV"
+        },
+        "homeTeam": {
+          "id": 55,
+          "abbreviation": "WAS"
+        },
+        "venue": {
+          "id": 73,
+          "name": "Northwest Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 64546,
+        "officials": [
+          {
+            "id": 19324,
+            "title": "Line Judge",
+            "firstName": "Tim",
+            "lastName": "Podraza"
+          },
+          {
+            "id": 20373,
+            "title": "Back Judge",
+            "firstName": "Jim",
+            "lastName": "Quirk"
+          },
+          {
+            "id": 477360,
+            "title": "Field Judge",
+            "firstName": "Jason",
+            "lastName": "Ledet"
+          },
+          {
+            "id": 20269,
+            "title": "Referee",
+            "firstName": "Shawn",
+            "lastName": "Hochuli"
+          },
+          {
+            "id": 21972,
+            "title": "Umpire",
+            "firstName": "Shawn",
+            "lastName": "Smith"
+          },
+          {
+            "id": 21939,
+            "title": "Side Judge",
+            "firstName": "Jimmy",
+            "lastName": "Russell"
+          },
+          {
+            "id": 21851,
+            "title": "Down Judge",
+            "firstName": "Patrick",
+            "lastName": "Holt"
+          }
+        ],
+        "broadcasters": [
+          "FOX",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN",
+          "Channel 9"
+        ],
+        "weather": null
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 24,
+        "homeScoreTotal": 41,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 3,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 7,
+            "homeScore": 13
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 14
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 14,
+            "homeScore": 7
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148783,
+        "week": 3,
+        "startTime": "2025-09-21T20:05:00.000Z",
+        "endedTime": "2025-09-22T00:15:00.000Z",
+        "awayTeam": {
+          "id": 72,
+          "abbreviation": "DEN"
+        },
+        "homeTeam": {
+          "id": 75,
+          "abbreviation": "LAC"
+        },
+        "venue": {
+          "id": 162,
+          "name": "SoFi Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 70740,
+        "officials": [
+          {
+            "id": 19726,
+            "title": "Line Judge",
+            "firstName": "Jeff",
+            "lastName": "Seeman"
+          },
+          {
+            "id": 19836,
+            "title": "Back Judge",
+            "firstName": "Dino",
+            "lastName": "Paganelli"
+          },
+          {
+            "id": 21972,
+            "title": "Referee",
+            "firstName": "Shawn",
+            "lastName": "Smith"
+          },
+          {
+            "id": 19969,
+            "title": "Field Judge",
+            "firstName": "Dyrol",
+            "lastName": "Prioleau"
+          },
+          {
+            "id": 24098,
+            "title": "Umpire",
+            "firstName": "Tra",
+            "lastName": "Blake"
+          },
+          {
+            "id": 19460,
+            "title": "Side Judge",
+            "firstName": "Boris",
+            "lastName": "Cheek"
+          },
+          {
+            "id": 477252,
+            "title": "Down Judge",
+            "firstName": "Jay",
+            "lastName": "Bilbo"
+          }
+        ],
+        "broadcasters": [
+          "CBS",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "TSN",
+          "Sky Sports",
+          "NFL Game Pass on DAZN",
+          "Fox Sports 2",
+          "DAZN Germany (OTT)",
+          "SPORTV3"
+        ],
+        "weather": {
+          "type": "OVERCAST",
+          "description": "overcast clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 9,
+              "kilometersPerHour": 14
+            },
+            "direction": {
+              "degrees": 225,
+              "label": "SW"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 83,
+            "celsius": 28
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 69
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 20,
+        "homeScoreTotal": 23,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 10,
+            "homeScore": 3
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 3,
+            "homeScore": 10
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148784,
+        "week": 3,
+        "startTime": "2025-09-21T20:05:00.000Z",
+        "endedTime": "2025-09-22T00:06:00.000Z",
+        "awayTeam": {
+          "id": 70,
+          "abbreviation": "NO"
+        },
+        "homeTeam": {
+          "id": 79,
+          "abbreviation": "SEA"
+        },
+        "venue": {
+          "id": 69,
+          "name": "Lumen Field"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 68599,
+        "officials": [
+          {
+            "id": 23874,
+            "title": "Line Judge",
+            "firstName": "Thomas",
+            "lastName": "Eaton"
+          },
+          {
+            "id": 19278,
+            "title": "Back Judge",
+            "firstName": "Terrence",
+            "lastName": "Miles"
+          },
+          {
+            "id": 410824,
+            "title": "Referee",
+            "firstName": "Alex",
+            "lastName": "Moore"
+          },
+          {
+            "id": 21811,
+            "title": "Field Judge",
+            "firstName": "Mearl",
+            "lastName": "Robinson"
+          },
+          {
+            "id": 550689,
+            "title": "Umpire",
+            "firstName": "Terry",
+            "lastName": "Killens"
+          },
+          {
+            "id": 21709,
+            "title": "Side Judge",
+            "firstName": "Anthony",
+            "lastName": "Jeffries"
+          },
+          {
+            "id": 20089,
+            "title": "Down Judge",
+            "firstName": "Dana",
+            "lastName": "McKenzie"
+          }
+        ],
+        "broadcasters": [
+          "CBS",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "NFL Game Pass on DAZN"
+        ],
+        "weather": {
+          "type": "RAIN",
+          "description": "moderate rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 11,
+              "kilometersPerHour": 18
+            },
+            "direction": {
+              "degrees": 183,
+              "label": "SSE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 63,
+            "celsius": 17
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 5,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 56
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 13,
+        "homeScoreTotal": 44,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 21
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 6,
+            "homeScore": 17
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 6
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 7,
+            "homeScore": 0
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148785,
+        "week": 3,
+        "startTime": "2025-09-21T20:25:00.000Z",
+        "endedTime": "2025-09-22T00:17:00.000Z",
+        "awayTeam": {
+          "id": 52,
+          "abbreviation": "DAL"
+        },
+        "homeTeam": {
+          "id": 60,
+          "abbreviation": "CHI"
+        },
+        "venue": {
+          "id": 48,
+          "name": "Soldier Field"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 58389,
+        "officials": [
+          {
+            "id": 500851,
+            "title": "Line Judge",
+            "firstName": "Brian",
+            "lastName": "Perry"
+          },
+          {
+            "id": 20268,
+            "title": "Back Judge",
+            "firstName": "Gregory",
+            "lastName": "Wilson"
+          },
+          {
+            "id": 21973,
+            "title": "Field Judge",
+            "firstName": "Dave",
+            "lastName": "Hawkshaw"
+          },
+          {
+            "id": 21750,
+            "title": "Referee",
+            "firstName": "Clay",
+            "lastName": "Martin"
+          },
+          {
+            "id": 410191,
+            "title": "Side Judge",
+            "firstName": "Alonzo",
+            "lastName": "Ramsey III"
+          },
+          {
+            "id": 22204,
+            "title": "Umpire",
+            "firstName": "Steven",
+            "lastName": "Woods"
+          },
+          {
+            "id": 21752,
+            "title": "Down Judge",
+            "firstName": "Jerod",
+            "lastName": "Phillips"
+          }
+        ],
+        "broadcasters": [
+          "FOX",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "RDS",
+          "Channel 5 (Paramount)",
+          "NFL Game Pass on DAZN",
+          "Channel 9",
+          "ESPN PacRim",
+          "ESPN 2 & Disney+"
+        ],
+        "weather": {
+          "type": "LIGHT_RAIN",
+          "description": "light rain",
+          "wind": {
+            "speed": {
+              "milesPerHour": 15,
+              "kilometersPerHour": 24
+            },
+            "direction": {
+              "degrees": 211,
+              "label": "SW"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 82,
+            "celsius": 28
+          },
+          "precipitation": {
+            "type": "RAIN",
+            "percent": null,
+            "amount": {
+              "millimeters": 2,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 49
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 14,
+        "homeScoreTotal": 31,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 3,
+            "homeScore": 14
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 11,
+            "homeScore": 10
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 0,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 0,
+            "homeScore": 0
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148786,
+        "week": 3,
+        "startTime": "2025-09-21T20:25:00.000Z",
+        "endedTime": "2025-09-22T00:20:00.000Z",
+        "awayTeam": {
+          "id": 76,
+          "abbreviation": "ARI"
+        },
+        "homeTeam": {
+          "id": 78,
+          "abbreviation": "SF"
+        },
+        "venue": {
+          "id": 68,
+          "name": "Levi's Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 70414,
+        "officials": [
+          {
+            "id": 20094,
+            "title": "Line Judge",
+            "firstName": "Carl",
+            "lastName": "Johnson"
+          },
+          {
+            "id": 21905,
+            "title": "Back Judge",
+            "firstName": "Matthew",
+            "lastName": "Edwards"
+          },
+          {
+            "id": 23832,
+            "title": "Field Judge",
+            "firstName": "Anthony",
+            "lastName": "Flemming"
+          },
+          {
+            "id": 19921,
+            "title": "Referee",
+            "firstName": "John",
+            "lastName": "Hussey"
+          },
+          {
+            "id": 408509,
+            "title": "Umpire",
+            "firstName": "Duane",
+            "lastName": "Heydt"
+          },
+          {
+            "id": 19879,
+            "title": "Side Judge",
+            "firstName": "Allen",
+            "lastName": "Baynes"
+          },
+          {
+            "id": 410691,
+            "title": "Down Judge",
+            "firstName": "Max",
+            "lastName": "Causey"
+          }
+        ],
+        "broadcasters": [
+          "FOX",
+          "DAZN Canada (OTT)",
+          "Sky Sports",
+          "NFL Game Pass on DAZN",
+          "Fox Sports",
+          "RTL",
+          "7mate",
+          "beIN 1"
+        ],
+        "weather": {
+          "type": "SUNNY",
+          "description": "sky is clear",
+          "wind": {
+            "speed": {
+              "milesPerHour": 9,
+              "kilometersPerHour": 14
+            },
+            "direction": {
+              "degrees": 331,
+              "label": "NNW"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 90,
+            "celsius": 32
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 22
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 15,
+        "homeScoreTotal": 16,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 0,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 3,
+            "homeScore": 6
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 3,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 9,
+            "homeScore": 10
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148787,
+        "week": 3,
+        "startTime": "2025-09-22T00:20:00.000Z",
+        "endedTime": "2025-09-22T04:26:00.000Z",
+        "awayTeam": {
+          "id": 73,
+          "abbreviation": "KC"
+        },
+        "homeTeam": {
+          "id": 53,
+          "abbreviation": "NYG"
+        },
+        "venue": {
+          "id": 63,
+          "name": "MetLife Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 80690,
+        "officials": [
+          {
+            "id": 500624,
+            "title": "Line Judge",
+            "firstName": "Jeff",
+            "lastName": "Hutcheon"
+          },
+          {
+            "id": 19459,
+            "title": "Back Judge",
+            "firstName": "Brad",
+            "lastName": "Freeman"
+          },
+          {
+            "id": 22388,
+            "title": "Referee",
+            "firstName": "Vincent",
+            "lastName": "Land Clark"
+          },
+          {
+            "id": 22159,
+            "title": "Field Judge",
+            "firstName": "Jabir",
+            "lastName": "Walker"
+          },
+          {
+            "id": 24082,
+            "title": "Side Judge",
+            "firstName": "Dominique",
+            "lastName": "Pender"
+          },
+          {
+            "id": 19087,
+            "title": "Umpire",
+            "firstName": "Mark",
+            "lastName": "Pellis"
+          },
+          {
+            "id": 19970,
+            "title": "Down Judge",
+            "firstName": "Tom",
+            "lastName": "Stephan"
+          }
+        ],
+        "broadcasters": [
+          "NBC",
+          "UNIVERSO",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "RDS",
+          "TSN",
+          "NFL Game Pass on DAZN",
+          "Sky Sports",
+          "ESPN",
+          "DAZN Germany (OTT)",
+          "beIN 2",
+          "Globo"
+        ],
+        "weather": {
+          "type": "CLOUDY",
+          "description": "scattered clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 11,
+              "kilometersPerHour": 18
+            },
+            "direction": {
+              "degrees": 159,
+              "label": "S"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 68,
+            "celsius": 20
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 38
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 22,
+        "homeScoreTotal": 9,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 3,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 6,
+            "homeScore": 6
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 7,
+            "homeScore": 0
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 6,
+            "homeScore": 3
+          }
+        ]
+      }
+    },
+    {
+      "schedule": {
+        "id": 148788,
+        "week": 3,
+        "startTime": "2025-09-23T00:15:00.000Z",
+        "endedTime": null,
+        "awayTeam": {
+          "id": 61,
+          "abbreviation": "DET"
+        },
+        "homeTeam": {
+          "id": 56,
+          "abbreviation": "BAL"
+        },
+        "venue": {
+          "id": 45,
+          "name": "M&T Bank Stadium"
+        },
+        "venueAllegiance": "HOME",
+        "scheduleStatus": "NORMAL",
+        "originalStartTime": null,
+        "delayedOrPostponedReason": null,
+        "playedStatus": "COMPLETED",
+        "attendance": 70642,
+        "officials": [
+          {
+            "id": 22205,
+            "title": "Line Judge",
+            "firstName": "Tripp",
+            "lastName": "Sutter"
+          },
+          {
+            "id": 19724,
+            "title": "Back Judge",
+            "firstName": "Todd",
+            "lastName": "Prukop"
+          },
+          {
+            "id": 21531,
+            "title": "Field Judge",
+            "firstName": "Aaron",
+            "lastName": "Santi"
+          },
+          {
+            "id": 20372,
+            "title": "Referee",
+            "firstName": "Bill",
+            "lastName": "Vinovich"
+          },
+          {
+            "id": 500614,
+            "title": "Umpire",
+            "firstName": "Scott",
+            "lastName": "Walker"
+          },
+          {
+            "id": 19135,
+            "title": "Side Judge",
+            "firstName": "Jimmy",
+            "lastName": "Buchanan"
+          },
+          {
+            "id": 479892,
+            "title": "Down Judge",
+            "firstName": "Dale",
+            "lastName": "Keller"
+          }
+        ],
+        "broadcasters": [
+          "ESPN",
+          "ABC",
+          "ESPN2",
+          "ESPN DEPORTES",
+          "CTV",
+          "DAZN Canada (OTT)",
+          "RDS",
+          "TSN",
+          "NFL Game Pass on DAZN",
+          "Sky Sports",
+          "DAZN Germany (OTT)",
+          "beIN 3",
+          "ESPN 2 & Disney+"
+        ],
+        "weather": {
+          "type": "CLOUDY",
+          "description": "broken clouds",
+          "wind": {
+            "speed": {
+              "milesPerHour": 9,
+              "kilometersPerHour": 14
+            },
+            "direction": {
+              "degrees": 146,
+              "label": "ESE"
+            }
+          },
+          "temperature": {
+            "fahrenheit": 75,
+            "celsius": 24
+          },
+          "precipitation": {
+            "type": null,
+            "percent": null,
+            "amount": {
+              "millimeters": null,
+              "centimeters": null,
+              "inches": null,
+              "feet": null
+            }
+          },
+          "humidityPercent": 71
+        }
+      },
+      "score": {
+        "currentQuarter": null,
+        "currentQuarterSecondsRemaining": null,
+        "currentIntermission": null,
+        "teamInPossession": null,
+        "currentDown": null,
+        "currentYardsRemaining": null,
+        "lineOfScrimmage": null,
+        "awayScoreTotal": 38,
+        "homeScoreTotal": 30,
+        "quarters": [
+          {
+            "quarterNumber": 1,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 2,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 3,
+            "awayScore": 7,
+            "homeScore": 7
+          },
+          {
+            "quarterNumber": 4,
+            "awayScore": 17,
+            "homeScore": 9
+          }
+        ]
+      }
+    }
+  ],
+  "teamsWithByes": [],
+  "references": {
+    "teamReferences": [
+      {
+        "id": 48,
+        "city": "Buffalo",
+        "name": "Bills",
+        "abbreviation": "BUF",
+        "homeVenue": {
+          "id": 46,
+          "name": "Highmark Stadium"
+        },
+        "teamColoursHex": [
+          "#00338d",
+          "#c60c30"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "BuffaloBills"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/BUF.svg"
+      },
+      {
+        "id": 49,
+        "city": "Miami",
+        "name": "Dolphins",
+        "abbreviation": "MIA",
+        "homeVenue": {
+          "id": 59,
+          "name": "Hard Rock Stadium"
+        },
+        "teamColoursHex": [
+          "#008e97",
+          "#fc4c02",
+          "#005778"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "MiamiDolphins"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/MIA.svg"
+      },
+      {
+        "id": 50,
+        "city": "New England",
+        "name": "Patriots",
+        "abbreviation": "NE",
+        "homeVenue": {
+          "id": 61,
+          "name": "Gillette Stadium"
+        },
+        "teamColoursHex": [
+          "#002244",
+          "#c60c30",
+          "#b0b7bc"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Patriots"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/NE.svg"
+      },
+      {
+        "id": 51,
+        "city": "New York",
+        "name": "Jets",
+        "abbreviation": "NYJ",
+        "homeVenue": {
+          "id": 63,
+          "name": "MetLife Stadium"
+        },
+        "teamColoursHex": [
+          "#125740",
+          "#000000",
+          "#ffffff"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "nyjets"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/NYJ.svg"
+      },
+      {
+        "id": 52,
+        "city": "Dallas",
+        "name": "Cowboys",
+        "abbreviation": "DAL",
+        "homeVenue": {
+          "id": 51,
+          "name": "AT&T Stadium"
+        },
+        "teamColoursHex": [
+          "#003594",
+          "#041e42",
+          "#869397",
+          "#7f9695",
+          "#ffffff"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "dallascowboys"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/DAL.svg"
+      },
+      {
+        "id": 53,
+        "city": "New York",
+        "name": "Giants",
+        "abbreviation": "NYG",
+        "homeVenue": {
+          "id": 63,
+          "name": "MetLife Stadium"
+        },
+        "teamColoursHex": [
+          "#0b2265",
+          "#a71930",
+          "#a5acaf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Ginats"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/NYG.svg"
+      },
+      {
+        "id": 54,
+        "city": "Philadelphia",
+        "name": "Eagles",
+        "abbreviation": "PHI",
+        "homeVenue": {
+          "id": 65,
+          "name": "Lincoln Financial Field"
+        },
+        "teamColoursHex": [
+          "#004c54",
+          "#a5acaf",
+          "#acc0c6",
+          "#000000",
+          "#565a5c"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Eagles"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/PHI.svg"
+      },
+      {
+        "id": 55,
+        "city": "Washington",
+        "name": "Commanders",
+        "abbreviation": "WAS",
+        "homeVenue": {
+          "id": 73,
+          "name": "Northwest Stadium"
+        },
+        "teamColoursHex": [
+          "#773141",
+          "#ffb612"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Redskins"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/WAS.svg"
+      },
+      {
+        "id": 56,
+        "city": "Baltimore",
+        "name": "Ravens",
+        "abbreviation": "BAL",
+        "homeVenue": {
+          "id": 45,
+          "name": "M&T Bank Stadium"
+        },
+        "teamColoursHex": [
+          "#241773",
+          "#000000",
+          "#9e7c0c",
+          "#c60c30"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Ravens"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/t_q-best/league/api/clubs/logos/BAL.svg"
+      },
+      {
+        "id": 57,
+        "city": "Cincinnati",
+        "name": "Bengals",
+        "abbreviation": "CIN",
+        "homeVenue": {
+          "id": 49,
+          "name": "Paycor Stadium"
+        },
+        "teamColoursHex": [
+          "#fb4f14",
+          "#000000"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Bengals"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/CIN.svg"
+      },
+      {
+        "id": 58,
+        "city": "Cleveland",
+        "name": "Browns",
+        "abbreviation": "CLE",
+        "homeVenue": {
+          "id": 50,
+          "name": "Huntington Bank Field"
+        },
+        "teamColoursHex": [
+          "#311d00",
+          "#ff3c00",
+          "#ffffff"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Browns"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/CLE.svg"
+      },
+      {
+        "id": 59,
+        "city": "Pittsburgh",
+        "name": "Steelers",
+        "abbreviation": "PIT",
+        "homeVenue": {
+          "id": 66,
+          "name": "Acrisure Stadium"
+        },
+        "teamColoursHex": [
+          "#ffb612",
+          "#101820",
+          "#003087",
+          "#c60c30",
+          "#a5acaf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "steelers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/PIT.svg"
+      },
+      {
+        "id": 60,
+        "city": "Chicago",
+        "name": "Bears",
+        "abbreviation": "CHI",
+        "homeVenue": {
+          "id": 48,
+          "name": "Soldier Field"
+        },
+        "teamColoursHex": [
+          "#0b162a",
+          "#c83803"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "ChicagoBears"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/CHI.svg"
+      },
+      {
+        "id": 61,
+        "city": "Detroit",
+        "name": "Lions",
+        "abbreviation": "DET",
+        "homeVenue": {
+          "id": 53,
+          "name": "Ford Field"
+        },
+        "teamColoursHex": [
+          "#0076b6",
+          "#b0b7bc",
+          "#000000",
+          "#ffffff"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Lions"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/DET.svg"
+      },
+      {
+        "id": 62,
+        "city": "Green Bay",
+        "name": "Packers",
+        "abbreviation": "GB",
+        "homeVenue": {
+          "id": 54,
+          "name": "Lambeau Field"
+        },
+        "teamColoursHex": [
+          "#203731",
+          "#ffb612"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "packers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/GB.svg"
+      },
+      {
+        "id": 63,
+        "city": "Minnesota",
+        "name": "Vikings",
+        "abbreviation": "MIN",
+        "homeVenue": {
+          "id": 141,
+          "name": "US Bank Stadium"
+        },
+        "teamColoursHex": [
+          "#4f2683",
+          "#ffc62f"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Vikings"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/MIN.svg"
+      },
+      {
+        "id": 64,
+        "city": "Houston",
+        "name": "Texans",
+        "abbreviation": "HOU",
+        "homeVenue": {
+          "id": 55,
+          "name": "NRG Stadium"
+        },
+        "teamColoursHex": [
+          "#03202f",
+          "#a71930"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "HoustonTexans"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/HOU.svg"
+      },
+      {
+        "id": 65,
+        "city": "Indianapolis",
+        "name": "Colts",
+        "abbreviation": "IND",
+        "homeVenue": {
+          "id": 56,
+          "name": "Lucas Oil Stadium"
+        },
+        "teamColoursHex": [
+          "#002c5f",
+          "#a2aaad"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Colts"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/IND.svg"
+      },
+      {
+        "id": 66,
+        "city": "Jacksonville",
+        "name": "Jaguars",
+        "abbreviation": "JAX",
+        "homeVenue": {
+          "id": 57,
+          "name": "TIAA Bank Field"
+        },
+        "teamColoursHex": [
+          "#101820",
+          "#d7a22a",
+          "#9f792c",
+          "#006778"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Jaguars"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/JAX.svg"
+      },
+      {
+        "id": 67,
+        "city": "Tennessee",
+        "name": "Titans",
+        "abbreviation": "TEN",
+        "homeVenue": {
+          "id": 72,
+          "name": "Nissan Stadium"
+        },
+        "teamColoursHex": [
+          "#0c2340",
+          "#418fde",
+          "#c8102e",
+          "#8a8d8f",
+          "#a2aaad",
+          "#54585a"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Titans"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/TEN.svg"
+      },
+      {
+        "id": 68,
+        "city": "Atlanta",
+        "name": "Falcons",
+        "abbreviation": "ATL",
+        "homeVenue": {
+          "id": 62,
+          "name": "Mercedes-Benz Stadium"
+        },
+        "teamColoursHex": [
+          "#a71930",
+          "#000000",
+          "#a5acaf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "AtlantaFalcons"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/ATL.svg"
+      },
+      {
+        "id": 69,
+        "city": "Carolina",
+        "name": "Panthers",
+        "abbreviation": "CAR",
+        "homeVenue": {
+          "id": 47,
+          "name": "Bank of America Stadium"
+        },
+        "teamColoursHex": [
+          "#0085ca",
+          "#101820",
+          "#bfc0bf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Panthers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/CAR.svg"
+      },
+      {
+        "id": 70,
+        "city": "New Orleans",
+        "name": "Saints",
+        "abbreviation": "NO",
+        "homeVenue": {
+          "id": 142,
+          "name": "Caesars Superdome"
+        },
+        "teamColoursHex": [
+          "#d3bc8d",
+          "#101820"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Saints"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/NO.svg"
+      },
+      {
+        "id": 71,
+        "city": "Tampa Bay",
+        "name": "Buccaneers",
+        "abbreviation": "TB",
+        "homeVenue": {
+          "id": 71,
+          "name": "Raymond James Stadium"
+        },
+        "teamColoursHex": [
+          "#d50a0a",
+          "#ff7900",
+          "#0a0a08",
+          "#b1babf",
+          "#34302b"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Buccaneers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/TB.svg"
+      },
+      {
+        "id": 72,
+        "city": "Denver",
+        "name": "Broncos",
+        "abbreviation": "DEN",
+        "homeVenue": {
+          "id": 52,
+          "name": "Empower Field at Mile High"
+        },
+        "teamColoursHex": [
+          "#fb4f14",
+          "#002244"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Broncos"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/DEN.svg"
+      },
+      {
+        "id": 73,
+        "city": "Kansas City",
+        "name": "Chiefs",
+        "abbreviation": "KC",
+        "homeVenue": {
+          "id": 58,
+          "name": "GEHA Field at Arrowhead Stadium"
+        },
+        "teamColoursHex": [
+          "#e31837",
+          "#ffb81c"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Chiefs"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/KC.svg"
+      },
+      {
+        "id": 74,
+        "city": "Las Vegas",
+        "name": "Raiders",
+        "abbreviation": "LV",
+        "homeVenue": {
+          "id": 161,
+          "name": "Allegiant Stadium"
+        },
+        "teamColoursHex": [
+          "#000000",
+          "#a5acaf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Raiders"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/LV.svg"
+      },
+      {
+        "id": 75,
+        "city": "Los Angeles",
+        "name": "Chargers",
+        "abbreviation": "LAC",
+        "homeVenue": {
+          "id": 162,
+          "name": "SoFi Stadium"
+        },
+        "teamColoursHex": [
+          "#002a5e",
+          "#ffc20e",
+          "#0080c6"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Chargers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/LAC.svg"
+      },
+      {
+        "id": 76,
+        "city": "Arizona",
+        "name": "Cardinals",
+        "abbreviation": "ARI",
+        "homeVenue": {
+          "id": 43,
+          "name": "State Farm Stadium"
+        },
+        "teamColoursHex": [
+          "#97233f",
+          "#000000",
+          "#ffb612"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "AZCardinals"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/ARI.svg"
+      },
+      {
+        "id": 77,
+        "city": "Los Angeles",
+        "name": "Rams",
+        "abbreviation": "LA",
+        "homeVenue": {
+          "id": 162,
+          "name": "SoFi Stadium"
+        },
+        "teamColoursHex": [
+          "#002244",
+          "#866d4b",
+          "#ffffff"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "RamsNFL"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/LA.svg"
+      },
+      {
+        "id": 78,
+        "city": "San Francisco",
+        "name": "49ers",
+        "abbreviation": "SF",
+        "homeVenue": {
+          "id": 68,
+          "name": "Levi's Stadium"
+        },
+        "teamColoursHex": [
+          "#aa0000",
+          "#b3995d"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "49ers"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/SF.svg"
+      },
+      {
+        "id": 79,
+        "city": "Seattle",
+        "name": "Seahawks",
+        "abbreviation": "SEA",
+        "homeVenue": {
+          "id": 69,
+          "name": "Lumen Field"
+        },
+        "teamColoursHex": [
+          "#002244",
+          "#69be28",
+          "#a5acaf"
+        ],
+        "socialMediaAccounts": [
+          {
+            "mediaType": "TWITTER",
+            "value": "Seahawks"
+          }
+        ],
+        "officialLogoImageSrc": "https://static.www.nfl.com/league/api/clubs/logos/SEA.svg"
+      }
+    ],
+    "venueReferences": [
+      {
+        "id": 45,
+        "name": "M&T Bank Stadium",
+        "city": "Baltimore, MD",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 39.278056,
+          "longitude": -76.622778
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 71008
+          }
+        ],
+        "playingSurface": "Tifway 419 Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 46,
+        "name": "Highmark Stadium",
+        "city": "Orchard Park, NY",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 42.774,
+          "longitude": -78.787
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 71608
+          }
+        ],
+        "playingSurface": "A-Turf Titan 50",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 47,
+        "name": "Bank of America Stadium",
+        "city": "Charlotte, NC",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 35.225833,
+          "longitude": -80.852778
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 75523
+          }
+        ],
+        "playingSurface": "Voyager Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 48,
+        "name": "Soldier Field",
+        "city": "Chicago, IL",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 41.8623,
+          "longitude": -87.6167
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 61500
+          }
+        ],
+        "playingSurface": "Kentucky Bluegrass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 50,
+        "name": "Huntington Bank Field",
+        "city": "Cleveland, OH",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 41.506111,
+          "longitude": -81.699444
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 67895
+          }
+        ],
+        "playingSurface": "Kentucky Bluegrass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 57,
+        "name": "TIAA Bank Field",
+        "city": "Jacksonville, FL",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 30.323889,
+          "longitude": -81.6375
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 82000
+          }
+        ],
+        "playingSurface": "Tifway 419 Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 61,
+        "name": "Gillette Stadium",
+        "city": "Foxborough, MA",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 42.090944,
+          "longitude": -71.264344
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "SOCCER",
+            "capacity": 20000
+          },
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 65878
+          }
+        ],
+        "playingSurface": "FieldTurf",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 63,
+        "name": "MetLife Stadium",
+        "city": "East Rutherford, NJ",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 40.813528,
+          "longitude": -74.074361
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 82550
+          }
+        ],
+        "playingSurface": "Act Global Speed S5",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 65,
+        "name": "Lincoln Financial Field",
+        "city": "Philadelphia, PA",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 39.900833,
+          "longitude": -75.1675
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 69696
+          }
+        ],
+        "playingSurface": "NorthBridge Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 68,
+        "name": "Levi's Stadium",
+        "city": "Santa Clara, CA",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 37.403,
+          "longitude": -121.97
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 75000
+          }
+        ],
+        "playingSurface": "Tifway II Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 69,
+        "name": "Lumen Field",
+        "city": "Seattle, WA",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 47.5952,
+          "longitude": -122.3316
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "SOCCER",
+            "capacity": 68740
+          },
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 72000
+          }
+        ],
+        "playingSurface": "FieldTurf Revolution 360",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 71,
+        "name": "Raymond James Stadium",
+        "city": "Tampa, FL",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 27.975833,
+          "longitude": -82.503333
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 65618
+          }
+        ],
+        "playingSurface": "Tifway 419 Bermuda",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 72,
+        "name": "Nissan Stadium",
+        "city": "Nashville, TN",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 36.166389,
+          "longitude": -86.771389
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 69143
+          }
+        ],
+        "playingSurface": "Tifsport Bermuda Sod",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 73,
+        "name": "Northwest Stadium",
+        "city": "Landover, MD",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 38.907778,
+          "longitude": -76.864444
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 82000
+          }
+        ],
+        "playingSurface": "Latitude 36 Bermuda Grass",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 141,
+        "name": "US Bank Stadium",
+        "city": "Minneapolis, MN",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 44.974,
+          "longitude": -93.258
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "FOOTBALL",
+            "capacity": 73000
+          }
+        ],
+        "playingSurface": "Act Global Artificial Turf, FIFA Certified UBU Speed Series S5",
+        "baseballDimensions": [
+          {
+            "dimensionType": "RIGHT_FIELD",
+            "distanceFeet": 300
+          },
+          {
+            "dimensionType": "LEFT_CENTER",
+            "distanceFeet": 375
+          },
+          {
+            "dimensionType": "CENTER_FIELD",
+            "distanceFeet": 400
+          },
+          {
+            "dimensionType": "LEFT_FIELD",
+            "distanceFeet": 328
+          },
+          {
+            "dimensionType": "RIGHT_CENTER",
+            "distanceFeet": 350
+          }
+        ],
+        "hasRoof": true,
+        "hasRetractableRoof": false
+      },
+      {
+        "id": 162,
+        "name": "SoFi Stadium",
+        "city": "Inglewood, CA",
+        "country": "USA",
+        "geoCoordinates": {
+          "latitude": 33.95345,
+          "longitude": -118.3392
+        },
+        "capacitiesByEventType": [
+          {
+            "eventType": "MAJOR_EVENTS",
+            "capacity": 100240
+          },
+          {
+            "eventType": "GENERAL",
+            "capacity": 70240
+          }
+        ],
+        "playingSurface": "Matrix Turf",
+        "baseballDimensions": [],
+        "hasRoof": false,
+        "hasRetractableRoof": false
+      }
+    ]
+  }
+}

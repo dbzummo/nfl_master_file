@@ -1,132 +1,111 @@
 #!/usr/bin/env python3
-import argparse, sys, pathlib
+import math
+import sys
+from pathlib import Path
+
 import pandas as pd
 
-# --- Canonicalization / aliasing -------------------------------------------------
-ALIAS = {
-    # Current abbreviations (pass-through)
-    "ARI":"ARI","ATL":"ATL","BAL":"BAL","BUF":"BUF","CAR":"CAR","CHI":"CHI","CIN":"CIN","CLE":"CLE",
-    "DAL":"DAL","DEN":"DEN","DET":"DET","GB":"GB","HOU":"HOU","IND":"IND","JAX":"JAX","KC":"KC",
-    "LAC":"LAC","LA":"LA","LV":"LV","MIA":"MIA","MIN":"MIN","NE":"NE","NO":"NO","NYG":"NYG","NYJ":"NYJ",
-    "PHI":"PHI","PIT":"PIT","SEA":"SEA","SF":"SF","TB":"TB","TEN":"TEN","WAS":"WAS","WSH":"WAS",
+ROOT = Path(__file__).resolve().parent.parent
 
-    # Full team names -> abbrev
-    "ARIZONA CARDINALS":"ARI","ATLANTA FALCONS":"ATL","BALTIMORE RAVENS":"BAL","BUFFALO BILLS":"BUF",
-    "CAROLINA PANTHERS":"CAR","CHICAGO BEARS":"CHI","CINCINNATI BENGALS":"CIN","CLEVELAND BROWNS":"CLE",
-    "DALLAS COWBOYS":"DAL","DENVER BRONCOS":"DEN","DETROIT LIONS":"DET","GREEN BAY PACKERS":"GB",
-    "HOUSTON TEXANS":"HOU","INDIANAPOLIS COLTS":"IND","JACKSONVILLE JAGUARS":"JAX","KANSAS CITY CHIEFS":"KC",
-    "LOS ANGELES CHARGERS":"LAC","SAN DIEGO CHARGERS":"LAC",
-    "LOS ANGELES RAMS":"LA","ST. LOUIS RAMS":"LA",
-    "LAS VEGAS RAIDERS":"LV","OAKLAND RAIDERS":"LV",
-    "MIAMI DOLPHINS":"MIA","MINNESOTA VIKINGS":"MIN","NEW ENGLAND PATRIOTS":"NE","NEW ORLEANS SAINTS":"NO",
-    "NEW YORK GIANTS":"NYG","NEW YORK JETS":"NYJ","PHILADELPHIA EAGLES":"PHI","PITTSBURGH STEELERS":"PIT",
-    "SEATTLE SEAHAWKS":"SEA","SAN FRANCISCO 49ERS":"SF","TAMPA BAY BUCCANEERS":"TB","TENNESSEE TITANS":"TEN",
-    # Washington timeline
-    "WASHINGTON REDSKINS":"WAS","WASHINGTON FOOTBALL TEAM":"WAS","WASHINGTON COMMANDERS":"WAS",
-}
+# Inputs
+BASELINE_CANDIDATES = [
+    ROOT / "msf_week.csv",              # symlink commonly present
+    ROOT / "out" / "msf" / "week_games.csv",
+    ROOT / "out" / "week_games.csv",
+]
+RATINGS_CSV = ROOT / "data" / "elo" / "current_ratings.csv"
 
-def canon(team: str) -> str:
-    t = str(team).upper().strip()
-    return ALIAS.get(t, t)
+# Output
+OUT_CSV = ROOT / "out" / "week_with_elo.csv"
 
-# --- IO helpers ------------------------------------------------------------------
-def read_week_games():
-    candidates = [
-        ("out/msf_details/msf_week.csv", ["date","away_team","home_team","week","msf_game_id"]),
-        ("out/ingest/week_games.csv",    ["date","away_team","home_team","week","msf_game_id"]),
-    ]
-    for path, need_cols in candidates:
-        p = pathlib.Path(path)
+def fatal(msg: str):
+    print(f"[FATAL] {msg}", file=sys.stderr)
+    sys.exit(1)
+
+def pick_baseline() -> Path:
+    for p in BASELINE_CANDIDATES:
         if p.exists():
-            df = pd.read_csv(p)
-            missing = [c for c in need_cols if c not in df.columns]
-            if missing:
-                if missing == ["msf_game_id"]:
-                    df["msf_game_id"] = pd.NA
-                else:
-                    print(f"[WARN] {path} missing {missing}, skipping …", file=sys.stderr); continue
-            df["date"] = pd.to_datetime(df["date"]).dt.date
-            df["away_team"] = df["away_team"].map(canon)
-            df["home_team"] = df["home_team"].map(canon)
-            df["week"] = pd.to_numeric(df["week"], errors="coerce").astype("Int64")
-            return df, path
-    sys.exit("[FATAL] No weekly baseline found (msf_week.csv or week_games.csv)")
+            return p
+    fatal(f"No baseline week file found. Looked for: {BASELINE_CANDIDATES!r}")
 
-def read_elo_ratings(path="out/elo_ratings_by_date.csv"):
-    p = pathlib.Path(path)
+def read_ratings(p: Path) -> pd.DataFrame:
     if not p.exists():
-        sys.exit(f"[FATAL] Elo ratings not found at {path}. Run the Elo step first.")
-    df = pd.read_csv(p)
-    need = {"date","team","elo"}
-    if not need.issubset(df.columns):
-        sys.exit(f"[FATAL] {path} missing {sorted(need - set(df.columns))}")
-    df["date"] = pd.to_datetime(df["date"]).dt.date
-    # normalize team names from history (full names) to abbrevs
-    df["team"] = df["team"].map(canon)
-    df = df.sort_values(["team","date"])
-    return df
+        fatal(f"Elo ratings file missing: {p}\n"
+              "Create it with columns: team_abbr,elo (pre-week ratings).")
+    try:
+        df = pd.read_csv(p, encoding='utf-8')
+    except UnicodeDecodeError:
+        df = pd.read_csv(p, encoding='latin-1')
+    # allow flexible header case
+    cols = {c.lower(): c for c in df.columns}
+    ab = cols.get("team_abbr")
+    el = cols.get("elo")
+    if not ab or not el:
+        fatal(f"Ratings must have headers team_abbr,elo. Found: {list(df.columns)}")
+    df = df.rename(columns={ab: "team_abbr", el: "elo"}).copy()
+    df["team_abbr"] = df["team_abbr"].astype(str).str.strip().str.upper()
+    if df["team_abbr"].duplicated().any():
+        dups = df[df["team_abbr"].duplicated()]["team_abbr"].unique().tolist()
+        fatal(f"Duplicate team_abbr in ratings: {dups}")
+    return df[["team_abbr", "elo"]]
 
-# --- Elo lookup / transform ------------------------------------------------------
-def latest_elo_before(ratings, team, game_date):
-    r = ratings.loc[ratings["team"].eq(team)]
-    if r.empty: return 1500.0
-    rb = r[r["date"] < game_date]
-    if not rb.empty: return float(rb.iloc[-1]["elo"])
-    ro = r[r["date"] <= game_date]
-    if not ro.empty: return float(ro.iloc[-1]["elo"])
-    return 1500.0
+def logistic_from_elo(diff):
+    # P(home) = 1 / (1 + 10^(-diff/400))
+    return 1.0 / (1.0 + (10.0 ** (-(diff / 400.0))))
 
-def expected_home_from_diff(elo_diff):
-    return 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
-
-# --- Main ------------------------------------------------------------------------
 def main():
-    ap = argparse.ArgumentParser(description="Join current week's games with latest Elo ratings.")
-    ap.add_argument("--hfa", type=float, default=55.0,
-                    help="Home-field Elo advantage added to (E_home - E_away). Default: 55")
-    ap.add_argument("--elo", default="out/elo_ratings_by_date.csv",
-                    help="Path to Elo ratings-by-date CSV")
-    ap.add_argument("--out", default="out/week_with_elo.csv",
-                    help="Output CSV path")
-    args = ap.parse_args()
+    base_path = pick_baseline()
+    print(f"[INFO] Using games baseline: {base_path.relative_to(ROOT)}")
 
-    games, games_src = read_week_games()
-    ratings = read_elo_ratings(args.elo)
+    base = pd.read_csv(base_path)
+    # Normalize baseline headers we rely on
+    cols = {c.lower(): c for c in base.columns}
+    need = ["msf_game_id","game_start","home_abbr","away_abbr","venue","status"]
+    miss = [c for c in need if c not in cols]
+    if miss:
+        fatal(f"Baseline missing required columns: {miss}. Found: {list(base.columns)}")
+    base = base.rename(columns={cols["home_abbr"]: "home_abbr",
+                                cols["away_abbr"]: "away_abbr"}).copy()
+    base["home_abbr"] = base["home_abbr"].astype(str).str.strip().str.upper()
+    base["away_abbr"] = base["away_abbr"].astype(str).str.strip().str.upper()
 
-    rows = []
-    for _, g in games.iterrows():
-        gdate = g["date"]; home = g["home_team"]; away = g["away_team"]
-        elo_home_pre = latest_elo_before(ratings, home, gdate)
-        elo_away_pre = latest_elo_before(ratings, away, gdate)
-        elo_diff_pre = (elo_home_pre - elo_away_pre) + args.hfa
-        exp_home = expected_home_from_diff(elo_diff_pre)
+    ratings = read_ratings(RATINGS_CSV)
 
-        rows.append({
-            "date": gdate.isoformat(),
-            "week": g.get("week", pd.NA),
-            "away_team": away,
-            "home_team": home,
-            "msf_game_id": g.get("msf_game_id", pd.NA),
-            "elo_home_pre": round(elo_home_pre, 6),
-            "elo_away_pre": round(elo_away_pre, 6),
-            "elo_diff_pre": round(elo_diff_pre, 6),
-            "elo_exp_home": round(exp_home, 6),
-        })
 
-    out = pd.DataFrame(rows).sort_values(["date","home_team","away_team"])
-    outp = pathlib.Path(args.out); outp.parent.mkdir(parents=True, exist_ok=True); out.to_csv(outp, index=False)
+    # Guard: ratings must not be flat
+    if ratings['elo'].nunique() <= 1:
+        fatal(f"Ratings are flat (nunique={ratings['elo'].nunique()}). "
+              f"Update {RATINGS_CSV} with differentiated pre-week Elo.")
 
-    dmin, dmax = out["date"].min(), out["date"].max()
-    print(f"[JOIN] games source: {games_src}")
-    print(f"[JOIN] wrote {outp} rows={len(out)} | date range {dmin} → {dmax}")
-    print(out.head(8).to_string(index=False))
+    # Join Elo to home/away
+    merged = (base
+              .merge(ratings.rename(columns={"team_abbr": "home_abbr", "elo": "elo_home"}),
+                     on="home_abbr", how="left")
+              .merge(ratings.rename(columns={"team_abbr": "away_abbr", "elo": "elo_away"}),
+                     on="away_abbr", how="left"))
 
-    mask = (out["home_team"].eq("GB")) & (out["away_team"].eq("WAS"))
-    if mask.any():
-        s = out[mask].iloc[0]
-        print(f"\n[CHECK] {s['away_team']} @ {s['home_team']} on {s['date']}: "
-              f"elo_home_pre={s['elo_home_pre']:.1f}, elo_away_pre={s['elo_away_pre']:.1f}, "
-              f"elo_diff_pre={s['elo_diff_pre']:.1f}, elo_exp_home={s['elo_exp_home']:.3f}")
+    # Guardrails: ensure we have Elo for all teams present this week
+    missing_home = merged[merged["elo_home"].isna()]["home_abbr"].unique().tolist()
+    missing_away = merged[merged["elo_away"].isna()]["away_abbr"].unique().tolist()
+    missing = sorted(set(missing_home + missing_away))
+    if missing:
+        fatal(f"Elo missing for {len(missing)} team(s): {missing}. "
+              f"Update {RATINGS_CSV} (team_abbr,elo).")
+
+    # Compute model probability
+    merged["elo_diff"] = merged["elo_home"] - merged["elo_away"]
+    merged["p_home_model"] = logistic_from_elo(merged["elo_diff"])
+
+    # Order & write
+    preferred = [c for c in [
+        "msf_game_id","game_start","home_abbr","away_abbr","venue","status",
+        "elo_home","elo_away","elo_diff","p_home_model"
+    ] if c in merged.columns]
+    merged = merged[preferred + [c for c in merged.columns if c not in preferred]]
+
+    OUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+    merged.to_csv(OUT_CSV, index=False)
+    print(f"[OK] wrote {OUT_CSV} (rows={len(merged)}) with real p_home_model")
 
 if __name__ == "__main__":
     main()

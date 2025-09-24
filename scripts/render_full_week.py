@@ -131,7 +131,7 @@ def merge_all(msf):
                     o["date"] = o["date_utc"]
                 else:
                     o[want] = pd.NA
-        merged = msf.merge(o[["date","away_team","home_team","book","market_spread","market_total"]], 
+        merged = msf.merge(o[["date","away_team","home_team","book","market_spread","market_total"]],
                            on=["date","away_team","home_team"], how="left")
     else:
         merged = msf.copy()

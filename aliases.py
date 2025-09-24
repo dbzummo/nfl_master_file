@@ -21,7 +21,7 @@ def _normalize_code(x: str) -> str:
     return TEAM_ALIASES.get(x, x)
 
 def apply_aliases(df: pd.DataFrame, cols: Iterable[str]) -> pd.DataFrame:
-    """ 
+    """
     Return a COPY of df with all given columns normalized via TEAM_ALIASES.
     If a column is missing, it's ignored (no crash).
     """

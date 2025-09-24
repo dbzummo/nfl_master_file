@@ -48,7 +48,7 @@ def next_nonempty(lines, i):
     j = i
     while j < n and norm(lines[j]) == "":
         j += 1
-    if j >= n: 
+    if j >= n:
         return None, None
     return j, norm(lines[j])
 

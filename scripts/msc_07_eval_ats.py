@@ -68,7 +68,7 @@ def main() -> int:
         if "date" in board.columns: keep.append("date")
         if "home_team" in board.columns: keep.append("home_team")
         if "away_team" in board.columns: keep.append("away_team")
-        if pcol: 
+        if pcol:
             keep.append(pcol)
             label_map[pcol] = "p_home_hat"
 
@@ -106,11 +106,11 @@ def main() -> int:
 
         # Correct if our pick matches the cover (excluding pushes from denominator).
         def correct_row(r):
-            if r["ats_outcome"] == "PUSH": 
+            if r["ats_outcome"] == "PUSH":
                 return None
-            if r["spread_home"] > 0 and r["ats_outcome"] == "HOME cover": 
+            if r["spread_home"] > 0 and r["ats_outcome"] == "HOME cover":
                 return True
-            if r["spread_home"] < 0 and r["ats_outcome"] == "AWAY cover": 
+            if r["spread_home"] < 0 and r["ats_outcome"] == "AWAY cover":
                 return True
             return False
 
@@ -123,7 +123,7 @@ def main() -> int:
         wr = (correct / non_push) if non_push > 0 else float("nan")
 
         # Render deterministic HTML
-        def esc(s): 
+        def esc(s):
             return ("" if pd.isna(s) else str(s)).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
 
         rows = []

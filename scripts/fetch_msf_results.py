@@ -2,7 +2,7 @@
 """
 Fetch NFL game results from MySportsFeeds v2.1 and write history/season_<YEAR>_from_site.csv.
 
-- Auth: Basic auth (username=<API_KEY>, password="MYSPORTSFEEDS")
+- Auth: Basic auth (username=<API_KEY>, passphrase "MYSPORTSFEEDS")
 - Endpoint(s):
     https://api.mysportsfeeds.com/v2.1/pull/nfl/{season-path}/week/{week}/games.json
   where season-path is like "2025-regular" and week is 1..18

@@ -16,7 +16,7 @@ def pick_prob(row):
 mismatch=[]
 for gid,brow in board.items():
     if not gid or gid not in preds: continue
-    pb=pick_prob(brow); 
+    pb=pick_prob(brow);
     if pb is None: mismatch.append((gid,"no_board_prob")); continue
     pe=preds[gid]
     if not (0<=pe<=1): mismatch.append((gid,"pred_out_of_range")); continue

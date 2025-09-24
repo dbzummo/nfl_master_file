@@ -14,7 +14,7 @@
       "start_offset_days": -1,
       "end_offset_days": 6
     },
-    "neutral_site_handling": "respect_flag", 
+    "neutral_site_handling": "respect_flag",
     "top_plays_count": 5,
     "save_artifacts": true
   },
