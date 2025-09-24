@@ -23,3 +23,12 @@ repos:
       entry: bash scripts/check_symlinks.sh
       language: system
       pass_filenames: false
+
+# Ignore gigantic CSVs for whitespace-only hooks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
+    - id: end-of-file-fixer
+      exclude: ^play_by_play_(2022|2024)\.csv$
+    - id: trailing-whitespace
+      exclude: ^play_by_play_(2022|2024)\.csv$
