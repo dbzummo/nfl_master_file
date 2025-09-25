@@ -1,6 +1,8 @@
 name: calibration-check
 
 on:
+  pull_request:
+    branches: [ main ]
   schedule:
     - cron: "15 8 * * *"
   push:
