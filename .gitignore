@@ -1,71 +1,14 @@
-# OS
-.DS_Store
-
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-.ipynb_checkpoints/
-
-# Environments & IDE
-.venv/
-.env
-.secrets/   # legacy
-_secrets/
-
-# Archives & saves
-_snapshots/
-saves/
-_archive/
-_old_reports/
-
-# Build/outputs (keep only what you consciously commit)
-out/*.log
-out/*.png
-out/*.pdf
-out/*.parquet
-out/*.feather
-out/large/
-# Allow small CSV/HTML if you want to track them:
-!out/*.csv
-!out/*.html
-
-# Backups
-*.bak
-*.bak.*
-*.sio_patch
-*.ast
-
-# Misc
-*.sqlite
-*.db
-
-# artifacts
-artifacts/
-
-# env and keys
-.env*
-OddAPI.env
-
-# local worktrees
-.phase0_worktrees/
-
-# debug bundles
-debug_bundle_*/
-# local worktrees
-.phase0_worktrees/
-
-# virtualenv
-.venv/
-
-# env and keys
-.env*
-OddAPI.env
+# generated
+out/calibration/*.json
+reports/board_week.html
+raw/msf/injuries/*.json
 out/msf/odds_raw/
+
+# local convenience links
 /week_games.csv
 /msf_week.csv
-scripts/week_games.csv
-scripts/msf_week.csv
-out/week_games.csv
+.env
+out/calibration/*.json
+reports/board_week.html
+raw/msf/injuries/*.json
+out/msf/odds_raw/

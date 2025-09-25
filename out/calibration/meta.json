@@ -1,1 +1,0 @@
-{"n_rows": 240, "a": 4.065888506463222, "b": 0.38308537564223294, "base_logloss": 0.5195469579329289, "cal_logloss": 0.3773754105234296, "hist_glob": "history/enriched_202[2-4]*.csv", "season_start": 2022, "season_end": 2024, "date_min": "2024-09-05", "date_max": "2024-12-29"}
