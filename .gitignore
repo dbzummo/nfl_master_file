@@ -63,3 +63,9 @@ debug_bundle_*/
 # env and keys
 .env*
 OddAPI.env
+out/msf/odds_raw/
+/week_games.csv
+/msf_week.csv
+scripts/week_games.csv
+scripts/msf_week.csv
+out/week_games.csv

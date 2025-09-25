@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v6.0.0
   hooks:
     - id: end-of-file-fixer
     - id: trailing-whitespace
@@ -26,7 +26,7 @@ repos:
 
 # Ignore gigantic CSVs for whitespace-only hooks
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v6.0.0
   hooks:
     - id: end-of-file-fixer
       exclude: ^play_by_play_(2022|2024)\.csv$

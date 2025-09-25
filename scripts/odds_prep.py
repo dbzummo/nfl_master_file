@@ -1,153 +1,228 @@
 #!/usr/bin/env python3
-"""
-Normalize raw odds (from MSF or The Odds API) into 3-letter team abbreviations,
-ensure consistent columns, and write a cleaned file for the join step.
-
-Inputs (auto-detected):
-  - out/odds_week.csv           # your current raw odds dump (home/away may be long names)
-  - teams_lookup.json           # mapping of names/aliases -> 3-letter abbreviations
-
-Output:
-  - out/odds_week_norm.csv      # normalized odds with home_abbr/away_abbr + market_p_home
-
-This script is idempotent and safe to re-run.
-"""
-
-from __future__ import annotations
-from pathlib import Path
-import json
-import math
-import sys
-import csv
-
+import os, sys, time, json, math, pathlib, argparse
+from statistics import median
+from typing import List, Dict, Any, Optional
+import requests
 import pandas as pd
 
-RAW = Path("out/odds_week.csv")
-OUT = Path("out/odds_week_norm.csv")
-LK  = Path("teams_lookup.json")
+OUT_WEEK_FILE = pathlib.Path("out/week_with_market.csv")
+RAW_DIR = pathlib.Path("out/msf/odds_raw")
 
-EXPECTED_COLS = [
-    "home_abbr","away_abbr","commence_time","book_count","ml_home","ml_away","market_p_home"
-]
+MSF_API_KEY = os.environ.get("MSF_API_KEY")
+MSF_SEASON  = os.environ.get("MSF_SEASON", "current").strip()
 
-def fail(msg: str) -> None:
+def fatal(msg: str, code: int = 2):
     print(f"[FATAL] {msg}", file=sys.stderr)
-    sys.exit(1)
+    sys.exit(code)
 
-def load_lookup() -> dict:
-    if not LK.exists():
-        fail("teams_lookup.json is missing. Please place it at repo root.")
-    with LK.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    # Normalize keys to lowercase and strip
-    norm = {}
-    for k, v in data.items():
-        if isinstance(v, dict) and "abbr" in v:
-            abbr = str(v["abbr"]).strip().upper()
-            norm[str(k).strip().lower()] = abbr
-            # also include simple aliases if present
-            for alias in v.get("aliases", []):
-                norm[str(alias).strip().lower()] = abbr
-        else:
-            # allow simple "Name": "ABR" form
-            norm[str(k).strip().lower()] = str(v).strip().upper()
-
-    return norm
-
-def to_prob_from_american(american: float|int|str|None) -> float|None:
-    """Convert american moneyline to implied probability. Return None if impossible."""
+def american_to_prob(american: Optional[float]) -> Optional[float]:
+    """Convert American odds to implied probability (including vig)."""
     if american is None or (isinstance(american, float) and math.isnan(american)):
         return None
     try:
         a = float(american)
     except Exception:
         return None
-    if a > 0:
-        return 100.0 / (a + 100.0)
-    elif a < 0:
+    if a == 0:
+        return None
+    if a < 0:
+        # favorite
         return (-a) / ((-a) + 100.0)
     else:
-        return None
+        # underdog
+        return 100.0 / (a + 100.0)
 
-def normalize_team(x: str|None, lk: dict) -> str|None:
-    if x is None:
+def devig_two_side(p_home_raw: Optional[float], p_away_raw: Optional[float]) -> Optional[float]:
+    """Given raw implied probs (with vig) for both teams, return de-vigged home prob."""
+    if p_home_raw is None and p_away_raw is None:
         return None
-    s = str(x).strip()
-    if not s:
+    if p_home_raw is None:
         return None
-    # try lookup by lowercase full string
-    hit = lk.get(s.lower())
-    if hit:
-        return hit
-    # try removing common suffixes/prefixes (e.g., city names duplicated, "the")
-    s2 = s.replace("The ", "").replace("the ", "").strip()
-    hit = lk.get(s2.lower())
-    if hit:
-        return hit
-    # fall back: if already looks like 2–4 caps, keep it
-    if s.isupper() and 2 <= len(s) <= 4:
-        return s
-    # else return original (join step will not match if it’s not in lookup)
-    return s
+    if p_away_raw is None:
+        return None
+    s = p_home_raw + p_away_raw
+    if s <= 0:
+        return None
+    return p_home_raw / s
+
+def pick_dates(args_dates: Optional[str]) -> List[str]:
+    # 1) CLI --dates
+    if args_dates:
+        xs = [x.strip() for x in args_dates.split(",") if x.strip()]
+        if xs:
+            print(f"[INFO] dates source: --dates n={len(xs)}")
+            return xs
+
+    # 2) out/week_predictions.csv
+    wp = pathlib.Path("out/week_predictions.csv")
+    if wp.exists():
+        try:
+            df = pd.read_csv(wp)
+            if "date" in df.columns:
+                ds = sorted(set(str(int(d)) for d in df["date"].dropna().astype(int)))
+                if ds:
+                    print(f"[INFO] dates source: out/week_predictions.csv col=date n={len(ds)}")
+                    return ds
+        except Exception as e:
+            print(f"[WARN] could not read {wp}: {e}")
+
+    # 3) out/week_with_elo.csv (game_date)
+    wwe = pathlib.Path("out/week_with_elo.csv")
+    if wwe.exists():
+        try:
+            df = pd.read_csv(wwe)
+            for cand in ("game_date","date"):
+                if cand in df.columns:
+                    ds = []
+                    for x in df[cand].dropna():
+                        s = str(x)
+                        # accept YYYYMMDD or ISO date
+                        digits = "".join(ch for ch in s if ch.isdigit())
+                        if len(digits) >= 8:
+                            ds.append(digits[:8])
+                    ds = sorted(set(ds))
+                    if ds:
+                        print(f"[INFO] dates source: {wwe} col={cand} n={len(ds)}")
+                        return ds
+        except Exception as e:
+            print(f"[WARN] could not read {wwe}: {e}")
+
+    fatal("No dates found in any candidate file. Use --dates or ensure a file has a date/game_date column.")
+
+def fetch_day(session: requests.Session, day: str) -> Dict[str, Any]:
+    """Fetch one day odds JSON. Retries on 429 with backoff. Adds ?force=false."""
+    url = f"https://api.mysportsfeeds.com/v2.1/pull/nfl/{MSF_SEASON}/date/{day}/odds_gamelines.json"
+    params = {"force":"false"}  # crucial to avoid throttling-empty 304s
+    backoff = 2.0
+    for attempt in range(6):
+        resp = session.get(url, params=params, timeout=30)
+        if resp.status_code == 200:
+            try:
+                return resp.json()
+            except Exception:
+                # sometimes CDN returns HTML; treat as empty for this day
+                print(f"[WARN] {day} odds non-JSON payload; skipping")
+                return {}
+        if resp.status_code == 304:
+            # not modified; treat as cache hit but we don't have a body, skip
+            print(f"[INFO] {day} odds 304 Not Modified; skipping (no body).")
+            return {}
+        if resp.status_code == 403:
+            print(f"[WARN] {day} odds HTTP 403: Access Restricted. Check plan add-ons and MSF_SEASON={MSF_SEASON}.")
+            return {}
+        if resp.status_code == 404:
+            print(f"[WARN] {day} odds HTTP 404: No odds for this date (yet).")
+            return {}
+        if resp.status_code == 429:
+            print(f"[WARN] {day} odds HTTP 429: throttled. sleeping {backoff:.1f}s then retry...")
+            time.sleep(backoff)
+            backoff = min(backoff * 1.8, 10.0)
+            continue
+        # other codes
+        snippet = (resp.text or "")[:220].replace("\n"," ")
+        print(f"[WARN] {day} odds HTTP {resp.status_code}: {snippet!r}")
+        return {}
+    print(f"[WARN] {day} odds gave repeated 429s; giving up.")
+    return {}
+
+def extract_rows(doc: Dict[str, Any]) -> List[Dict[str, Any]]:
+    rows = []
+    if not doc or "gameLines" not in doc or not isinstance(doc["gameLines"], list):
+        return rows
+    for gl in doc["gameLines"]:
+        try:
+            g = gl.get("game", {})
+            gid = g.get("id")
+            start = g.get("startTime")
+            wk = g.get("week")
+            away = g.get("awayTeamAbbreviation")
+            home = g.get("homeTeamAbbreviation")
+            # lines per source
+            for ln in (gl.get("lines") or []):
+                src = (ln.get("source") or {}).get("name")
+                # Each moneyLines entry has an asOfTime and moneyLine with awayLine/homeLine
+                for ml in (ln.get("moneyLines") or []):
+                    mlobj = ml.get("moneyLine") or {}
+                    away_line = (mlobj.get("awayLine") or {}).get("american")
+                    home_line = (mlobj.get("homeLine") or {}).get("american")
+                    p_home_raw = american_to_prob(home_line)
+                    p_away_raw = american_to_prob(away_line)
+                    p_home = devig_two_side(p_home_raw, p_away_raw)
+                    # Record even if p_home is None; we’ll drop later
+                    rows.append({
+                        "msf_game_id": gid,
+                        "startTime": start,
+                        "week": wk,
+                        "away_abbr": away,
+                        "home_abbr": home,
+                        "source": src,
+                        "p_home_book": p_home,
+                    })
+        except Exception:
+            # be resilient to odd shapes in a single source
+            continue
+    return rows
 
 def main():
-    if not RAW.exists():
-        fail(f"{RAW} not found. Run your odds fetch first.")
+    if not MSF_API_KEY:
+        fatal("Set MSF_API_KEY in your environment (value: your MSF API key).")
+    if not MSF_SEASON:
+        fatal("Set MSF_SEASON in your environment (e.g. 2025-regular).")
 
-    # Load odds
-    df = pd.read_csv(RAW)
-    if df.empty:
-        print("[WARN] Raw odds file has header only / no rows; writing empty normalized file.")
-        OUT.parent.mkdir(parents=True, exist_ok=True)
-        with OUT.open("w", newline="", encoding="utf-8") as f:
-            csv.DictWriter(f, fieldnames=EXPECTED_COLS).writeheader()
-        print(f"[OK] Wrote {OUT} (rows=0)")
-        return
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dates", help="Comma-separated YYYYMMDD list (e.g. 20250925,20250928,20250929)")
+    args = ap.parse_args()
 
-    # Load lookup
-    lk = load_lookup()
+    dates = pick_dates(args.dates)
+    if not dates:
+        fatal("No dates to query.")
 
-    # Ensure expected columns exist
-    for c in EXPECTED_COLS:
-        if c not in df.columns:
-            df[c] = pd.NA
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Normalize teams → abbreviations
-    df["home_abbr"] = df["home_abbr"].apply(lambda x: normalize_team(x, lk))
-    df["away_abbr"] = df["away_abbr"].apply(lambda x: normalize_team(x, lk))
+    s = requests.Session()
+    s.auth = (MSF_API_KEY, "MYSPORTSFEEDS")
 
-    # Ensure numeric moneylines
-    for c in ("ml_home","ml_away"):
-        df[c] = pd.to_numeric(df[c], errors="coerce")
+    all_rows: List[Dict[str, Any]] = []
+    for d in dates:
+        doc = fetch_day(s, d)
+        # Save raw per-day (debug)
+        (RAW_DIR / f"odds_{d}.json").write_text(json.dumps(doc, indent=2), encoding="utf-8")
+        rows = extract_rows(doc)
+        # add day stamp for group sanity
+        for r in rows:
+            r["game_date"] = d
+        print(f"[INFO] {d} extracted rows: {len(rows)}")
+        all_rows.extend(rows)
+        time.sleep(1.5)  # gentle pacing between days to avoid 429 bursts
 
-    # Build/repair market_p_home if missing
-    if "market_p_home" not in df.columns:
-        df["market_p_home"] = pd.NA
+    if not all_rows:
+        fatal("No odds rows fetched; check API key, season, *ODDS add-on*, or date coverage.")
 
-    need_prob = df["market_p_home"].isna() | (df["market_p_home"] == "")
-    if need_prob.any():
-        # compute from ml_home, else invert ml_away
-        ph = df.loc[need_prob, "ml_home"].apply(to_prob_from_american)
-        inv = df.loc[need_prob, "ml_away"].apply(to_prob_from_american)
-        inv = inv.apply(lambda p: (1.0 - p) if (p is not None) else None)
-        df.loc[need_prob, "market_p_home"] = ph.fillna(inv)
+    df = pd.DataFrame(all_rows)
+    # Ensure numeric
+    if "p_home_book" in df.columns:
+        df["p_home_book"] = pd.to_numeric(df["p_home_book"], errors="coerce")
 
-    # Coerce to float
-    df["market_p_home"] = pd.to_numeric(df["market_p_home"], errors="coerce")
+    # Median market per game (drop NaNs first)
+    def safe_med(s: pd.Series) -> float:
+        vals = [float(x) for x in s if pd.notna(x)]
+        return float(median(vals)) if vals else float("nan")
 
-    # Drop rows without a usable home/away or prob
-    before = len(df)
-    df = df.dropna(subset=["home_abbr","away_abbr"]).copy()
-    # Keep even if market_p_home is NaN (join will still carry other market fields)
-    after = len(df)
+    red = (
+        df.groupby("msf_game_id", as_index=False)
+          .agg({
+              "game_date": "first",
+              "home_abbr": "first",
+              "away_abbr": "first",
+              "p_home_book": safe_med
+          })
+          .rename(columns={"p_home_book": "market_p_home"})
+    )
 
-    # Write normalized file with exact expected columns
-    df_out = df[EXPECTED_COLS].copy()
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    df_out.to_csv(OUT, index=False)
-
-    print(f"[OK] Normalized odds: {before} -> {after} rows; wrote {OUT} (rows={len(df_out)})")
+    OUT_WEEK_FILE.parent.mkdir(parents=True, exist_ok=True)
+    red.to_csv(OUT_WEEK_FILE, index=False)
+    ok_all = red["market_p_home"].notna().sum()
+    print(f"[OK] wrote {OUT_WEEK_FILE} (rows={len(red)}) | with market_p_home for {ok_all}/{len(red)} games")
 
 if __name__ == "__main__":
     main()

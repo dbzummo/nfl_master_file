@@ -1,62 +1,64 @@
 #!/usr/bin/env python3
-import pandas as pd
-from pathlib import Path
-import sys
+from __future__ import annotations
+import argparse, sys, pandas as pd, pathlib
 
-ROOT = Path(__file__).resolve().parents[0].parents[0] if Path(__file__).name != "ensure_week_predictions.py" else Path.cwd()
+ELO = pathlib.Path("out/week_with_elo.csv")
+MKT = pathlib.Path("out/week_with_market.csv")
+OUT = pathlib.Path("out/week_predictions.csv")
 
-BASE = ROOT / "out" / "week_with_elo.csv"      # may or may not have elo
-MKT  = ROOT / "out" / "week_with_market.csv"   # should have market_p_home
-OUT  = ROOT / "out" / "week_predictions.csv"
-
-def fatal(msg: str):
-    print(f"[FATAL] {msg}", file=sys.stderr)
-    sys.exit(1)
+def fatal(m): print(f"[FATAL] {m}", file=sys.stderr); sys.exit(2)
 
 def main():
-    # Load market (required to write anything)
-    if not MKT.exists():
-        fatal(f"Missing {MKT}; run join_week_with_market.py first.")
-    m = pd.read_csv(MKT)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--source", choices=["model","market","auto"], default="auto",
+                    help="probability source to emit")
+    ap.add_argument("--force", action="store_true")
+    args = ap.parse_args()
 
-    # Prefer a model probability if it exists in BASE (elo or precomputed)
-    ph_col = None
-    if BASE.exists():
-        b = pd.read_csv(BASE)
-        # Look for typical model prob columns
-        for c in b.columns:
-            lc = c.lower()
-            if lc in ("p_home_model","p_home","model_prob_home","prob_home","home_win_prob"):
-                ph_col = c
-                break
-        if ph_col:
-            # join by (home,away,game_start) if present, else (home,away)
-            on = [c for c in ["msf_game_id","game_start","home_abbr","away_abbr"] if c in b.columns and c in m.columns]
-            if not on:
-                on = [c for c in ["home_abbr","away_abbr"] if c in b.columns and c in m.columns]
-            if not on:
-                fatal("Could not align BASE and market to bring model probabilities through.")
-            m = m.merge(b[on+[ph_col]], on=on, how="left")
+    if not ELO.exists(): fatal("Run join_week_with_elo.py first.")
+    if not MKT.exists(): fatal("Run join_week_with_market.py first.")
+    elo = pd.read_csv(ELO)
+    mkt = pd.read_csv(MKT)
 
-    # Derive p_home selection:
-    # 1) If model prob present -> use it
-    # 2) Else use market implied probability (real, no 0.5)
-    if ph_col and m[ph_col].notna().any():
-        m["p_home"] = m[ph_col]
-        m["p_source"] = "model"
-    elif "market_p_home" in m.columns and m["market_p_home"].notna().any():
-        m["p_home"] = m["market_p_home"]
-        m["p_source"] = "market"
+    # Canonical id + date columns
+    for df in (elo, mkt):
+        if "game_start" in df.columns:
+            df["game_date"] = pd.to_datetime(df["game_start"]).dt.strftime("%Y%m%d")
+        if "msf_game_id" not in df.columns:
+            df["msf_game_id"] = df.apply(lambda r: f"{r['game_date']}-{r['away_abbr']}-{r['home_abbr']}", axis=1)
+
+    merged = elo.merge(mkt[["msf_game_id","market_p_home"]], on="msf_game_id", how="left")
+
+    # Choose source
+    if args.source == "model":
+        merged["p_home"] = merged["p_home_model"]
+        src = "model"
+    elif args.source == "market":
+        merged["p_home"] = merged["market_p_home"]
+        src = "market"
     else:
-        fatal("No real probability available (neither model nor market).")
+        # auto: prefer model when present, fallback to market
+        merged["p_home"] = merged["p_home_model"].where(merged["p_home_model"].notna(), merged["market_p_home"])
+        src = "model_auto"
 
-    # Write the minimal predictions file used downstream
-    keep = [c for c in ["msf_game_id","game_start","home_abbr","away_abbr","venue","status"] if c in m.columns]
-    keep += [c for c in ["p_home","p_source"] if c in m.columns]
-    out = m[keep].copy()
+    # Minimal columns required by results/backtest
+    out = merged[[
+        "game_date", "msf_game_id",
+        "away_abbr", "home_abbr",
+        "p_home"
+    ]].rename(columns={
+        "game_date":"date",
+        "away_abbr":"away_team",
+        "home_abbr":"home_team",
+    })
+
+    if out["p_home"].isna().any():
+        bad = out[out["p_home"].isna()]
+        fatal(f"Predictions contain null probs:\n{bad.head(10)}")
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(OUT, index=False)
-    print(f"[OK] Wrote {OUT} rows={len(out)} using p_source={out['p_source'].iloc[0] if len(out) else 'n/a'}")
+    print(f"[OK] Wrote {OUT} rows={len(out)} using p_source={src}")
 
 if __name__ == "__main__":
     main()
