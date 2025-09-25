@@ -1,0 +1,57 @@
+name: publish-weekly
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: "15 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps (jq)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Install Python deps (minimal)
+        run: |
+          python -m pip install --upgrade pip
+          # fall back to minimal set if no requirements.txt
+          (test -f requirements.txt && pip install -r requirements.txt) || \
+          pip install pandas numpy scipy scikit-learn csvkit
+
+      - name: Calibrate & validate week
+        env:
+          CAL_TRAIN_HISTORY_GLOB: "history/enriched_202[2-4]*.csv"
+          CAL_TRAIN_START_SEASON: "2022"
+          CAL_TRAIN_END_SEASON: "2024"
+          MIN_CAL_ROWS: "200"
+        run: |
+          make calibrate
+          python3 scripts/validate_calibration_contract.py
+
+      - name: Upload artifacts (board + csv + logs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-board-${{ github.run_number }}
+          path: |
+            out/model_board.csv
+            reports/board_week.html
+            out/injuries_week.csv
+            out/validation/weekly_status.csv
+            out/validation/validation_log.jsonl
+          if-no-files-found: error
+          retention-days: 14
