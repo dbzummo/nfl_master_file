@@ -70,19 +70,23 @@ clean:
 	rm -f out/week_predictions.csv out/week_predictions_norm_* out/predictions_week.csv
 	rm -f out/results/finals.csv out/results/week_results.csv
 	test -f reports/eval_ats.html || (echo "[FATAL] ATS eval did not produce reports/eval_ats.html"; exit 1)
-calibrate:
-	set -a; source .env; set +a; \
-	export CAL_TRAIN_HISTORY_GLOB='history/enriched_202[2-4]*.csv'; \
-	export CAL_TRAIN_START_SEASON=2022 CAL_TRAIN_END_SEASON=2024 MIN_CAL_ROWS=200; \
-	python3 scripts/run_week.py && \
-	jq . out/calibration/model_line_calibration.json && jq . out/calibration/meta.json
 .PHONY: calibrate
-
 calibrate:
-	@set -euo pipefail; \
-	set -a; source .env; set +a; \
-	export CAL_TRAIN_HISTORY_GLOB='history/enriched_202[2-4]*.csv'; \
-	export CAL_TRAIN_START_SEASON=2022 CAL_TRAIN_END_SEASON=2024 MIN_CAL_ROWS=200; \
-	python3 scripts/run_week.py; \
-	jq . out/calibration/model_line_calibration.json; \
+	@set -euo pipefail
+	set -a; source .env; set +a
+	export CAL_TRAIN_HISTORY_GLOB='history/enriched_202[2-4]*.csv'
+	export CAL_TRAIN_START_SEASON=2022 CAL_TRAIN_END_SEASON=2024 MIN_CAL_ROWS=200
+	python3 scripts/run_week.py
+	jq . out/calibration/model_line_calibration.json
 	jq . out/calibration/meta.json
+
+.PHONY: check-cal
+check-cal:
+	jq -e '.a!=null and .b!=null and .n==240' out/calibration/model_line_calibration.json >/dev/null
+	jq -e '.n_rows==240 and .hist_glob=="history/enriched_202[2-4]*.csv"' out/calibration/meta.json >/dev/null
+	csvcut -c p out/calibration/train_sample.csv | tail -n +2 | awk '{if($$1==0.5) f=1} END{exit(f)}'
+	@echo "[OK] calibration healthy"
+
+.PHONY: contract-check
+contract-check:
+	python3 scripts/validate_calibration_contract.py
