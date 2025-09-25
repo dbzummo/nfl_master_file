@@ -12,3 +12,5 @@
   && python3 scripts/compute_injury_adjustments.py \
   && python3 scripts/make_model_lines_and_board.py \
   && open reports/board_week.html
+## CI
+![calibration-check](https://github.com/dbzummo/nfl_master_file/actions/workflows/calibration-check.yml/badge.svg)
