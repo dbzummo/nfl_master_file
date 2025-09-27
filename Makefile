@@ -75,6 +75,7 @@ clean:
 	test -f reports/eval_ats.html || (echo "[FATAL] ATS eval did not produce reports/eval_ats.html"; exit 1)
 .PHONY: calibrate
 calibrate:
+	@[ -f .env ] && ( set -a; . ./.env; set +a ) || echo "[WARN] .env missing; using environment vars only"
 	@set -euo pipefail
 	set -a; source .env; set +a
 	export CAL_TRAIN_HISTORY_GLOB='history/enriched_202[2-4]*.csv'
@@ -90,11 +91,10 @@ check-cal:
 	csvcut -c p out/calibration/train_sample.csv | tail -n +2 | awk '{if($$1==0.5) f=1} END{exit(f)}'
 	@echo "[OK] calibration healthy"
 
+
 .PHONY: contract-check
 contract-check:
-	python3 scripts/validate_calibration_contract.py
-.PHONY: contract-check
-contract-check:
+	@python3 scripts/validate_calibration_contract.py
 	@jq -e '.a!=null and .b!=null and .n==240' out/calibration/model_line_calibration.json
 	@jq -e '.n_rows==240 and .hist_glob=="history/enriched_202[2-4]*.csv"' out/calibration/meta.json
 	@csvcut -c p out/calibration/train_sample.csv | tail -n +2 | awk '{if($$1==0.5) f=1} END{exit(f)}'
