@@ -4,22 +4,21 @@ on:
   push:
     branches: [ main ]
   schedule:
-    - cron: "15 8 * * *"
+    - cron: '15 8 * * *'   # 08:15 UTC daily
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install system deps (jq)
         run: |
@@ -29,9 +28,16 @@ jobs:
       - name: Install Python deps (minimal)
         run: |
           python -m pip install --upgrade pip
-          # fall back to minimal set if no requirements.txt
-          (test -f requirements.txt && pip install -r requirements.txt) || \
           pip install pandas numpy scipy scikit-learn csvkit
+
+      - name: Create .env from secrets
+        run: |
+          {
+            echo "MSF_API_KEY=${{ secrets.MSF_API_KEY }}";
+            echo "ODDS_API_KEY=${{ secrets.ODDS_API_KEY }}";
+            # add any other keys your scripts expect:
+            # echo "SOME_OTHER_KEY=${{ secrets.SOME_OTHER_KEY }}";
+          } | sed '/=$/d' > .env
 
       - name: Calibrate & validate week
         env:
