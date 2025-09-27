@@ -52,6 +52,9 @@ jobs:
           ls -lah out/validation || true
 
       # Required: these must exist or the step fails
+      - name: Verify board→predictions contract (game_id,p_home)
+        run: |
+          make contract
       - name: Upload required artifacts
         uses: actions/upload-artifact@v4
         with:
