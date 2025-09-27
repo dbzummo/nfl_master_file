@@ -37,3 +37,22 @@ clean:
 	rm -f out/validation/weekly_status.csv
 	rm -f out/validation/validation_log.jsonl
 	@echo "[clean] done"
+
+# ------------------------------
+# Contract: board -> predictions_week.csv (game_id,p_home)
+# Enforces Prime Directive: no drift between board and evaluator.
+# ------------------------------
+
+.PHONY: contract
+contract: out/model_board.csv week_games.csv
+	@echo "[contract] emitting predictions_week.csv from board"
+	@python3 scripts/emit_week_predictions_from_board.py \
+		--board out/model_board.csv \
+		--games week_games.csv \
+		--out predictions_week.csv \
+		--prob-col p_home_model
+	@echo "[contract] verifying board ↔ eval alignment"
+	@python3 scripts/verify_alignment.py
+	@echo "[contract] OK"
+
+# ci: trigger cal on PR
