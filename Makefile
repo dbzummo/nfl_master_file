@@ -56,3 +56,14 @@ contract: out/model_board.csv week_games.csv
 	@echo "[contract] OK"
 
 # ci: trigger cal on PR
+
+.PHONY: injuries injuries-contract contract
+injuries:
+	@python3 update_injuries_week.py
+	@python3 compute_injury_adjustments.py
+
+injuries-contract:
+	@python3 scripts/validate_injuries_contract.py
+
+contract: injuries injuries-contract
+	@python3 scripts/validate_calibration_contract.py
