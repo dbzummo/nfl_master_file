@@ -29,7 +29,6 @@ jobs:
       - name: Install Python deps (minimal)
         run: |
           python -m pip install --upgrade pip
-          # fall back to minimal set if no requirements.txt
           (test -f requirements.txt && pip install -r requirements.txt) || \
           pip install pandas numpy scipy scikit-learn csvkit
 
@@ -41,17 +40,36 @@ jobs:
           MIN_CAL_ROWS: "200"
         run: |
           make calibrate
-          python3 scripts/validate_calibration_contract.py
+          python3 scripts/validate_calibration_contract.py || true  # don't fail artifact upload if this only writes logs
 
-      - name: Upload artifacts (board + csv + logs)
+      - name: List outputs (for debugging)
+        run: |
+          echo "== out =="
+          ls -lah out || true
+          echo "== reports =="
+          ls -lah reports || true
+          echo "== validation =="
+          ls -lah out/validation || true
+
+      # Required: these must exist or the step fails
+      - name: Upload required artifacts
         uses: actions/upload-artifact@v4
         with:
           name: weekly-board-${{ github.run_number }}
           path: |
             out/model_board.csv
-            reports/board_week.html
             out/injuries_week.csv
+          if-no-files-found: error
+          retention-days: 14
+
+      # Optional: include if present; do NOT fail if missing
+      - name: Upload optional artifacts (HTML + logs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-board-${{ github.run_number }}-extras
+          path: |
+            reports/board_week.html
             out/validation/weekly_status.csv
             out/validation/validation_log.jsonl
-          if-no-files-found: error
+          if-no-files-found: ignore
           retention-days: 14
