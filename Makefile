@@ -1,3 +1,6 @@
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -eu -o pipefail -c
+
 export SEASON ?= 2025-regular
 export PYTHONPATH := $(CURDIR)
 
