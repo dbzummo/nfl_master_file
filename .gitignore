@@ -15,3 +15,6 @@ out/msf/odds_raw/
 
 # artifacts
 out/*.csv
+
+# generated outputs (nested)
+out/**/*.csv
