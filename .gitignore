@@ -12,3 +12,6 @@ out/calibration/*.json
 reports/board_week.html
 raw/msf/injuries/*.json
 out/msf/odds_raw/
+
+# artifacts
+out/*.csv
